@@ -2,12 +2,9 @@
   "name": "portal",
   "version": "0.1.0",
   "private": true,
-<<<<<<< HEAD
-=======
   "predeploy": "npm run build",
   "deploy": "gh-pages -d build",
 
->>>>>>> dfadf781ce56bb746e24b8b270ebdf8cc7b92264
   "dependencies": {
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
