@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Terminal, Shield, Lock, FileText } from 'lucide-react';
+import { Terminal, Shield} from 'lucide-react';
 
 const Privacy = () => {
   const [isVisible, setIsVisible] = useState(false);

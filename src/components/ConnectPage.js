@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Filter, MapPin, Briefcase, GraduationCap, UserPlus, X } from 'lucide-react';
+import { Search, MapPin, Briefcase, GraduationCap, UserPlus } from 'lucide-react';
 
 const ConnectPage = () => {
   const [filters, setFilters] = useState({

@@ -13,26 +13,15 @@ import Contact from './components/Contact';
 import Support from './components/Support';
 import { AuthFlow, Dashboard } from './components/AuthFlow';
 import ConnectPage from './components/ConnectPage';
-// const DashboardSection = () => (
-//   <div className="min-h-screen bg-gray-900 text-cyan-400 p-10">
-//     <h1 className="text-3xl font-mono">Dashboard Coming Soon</h1>
-//   </div>
-// );
+import DonationPage from './components/DonationPage';
 
 const EventsSection = () => (
   <div className="min-h-screen bg-gray-900 text-cyan-400 p-10">
     <h1 className="text-3xl font-mono">Events Coming Soon</h1>
   </div>
 );
-
-// const ConnectSection = () => (
-//   <div className="min-h-screen bg-gray-900 text-cyan-400 p-10">
-//     <h1 className="text-3xl font-mono">Connect Coming Soon</h1>
-//   </div>
-// );
-
 const App = () => (
-  <Router>
+  <Router basename="/">
     <div className="flex flex-col min-h-screen bg-gray-900">
       <Navbar />
       <main className="flex-grow">
@@ -52,6 +41,7 @@ const App = () => (
           <Route path="/terms" element={<Terms/>} />
           <Route path="/contact" element={<Contact/>} />
           <Route path="/support" element={<Support/>} />
+          <Route path="/donate" element={<DonationPage/>} />
         </Routes>
       </main>
       <NetworkDivider />

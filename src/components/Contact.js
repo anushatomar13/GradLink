@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Terminal, Mail, Phone, MapPin } from 'lucide-react';
+import { Terminal, Mail, Phone } from 'lucide-react';
 
 const Contact = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -20,7 +20,6 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-slate-900 relative overflow-hidden">
-      {/* Animated background elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-32 h-32 border border-cyan-500/20 rounded-lg transform rotate-45 animate-pulse" />
         <div className="absolute bottom-40 right-10 w-40 h-40 border border-cyan-500/20 rounded-full animate-spin-slow" />
@@ -29,7 +28,6 @@ const Contact = () => {
 
       <div className="relative container mx-auto px-6 py-20">
         <div className={`transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-          {/* Terminal-style header */}
           <div className="text-center mb-16">
             <div className="inline-block bg-slate-800/50 rounded-xl p-4 mb-6 border border-cyan-500/20">
               <Terminal className="inline-block w-6 h-6 text-cyan-400 mr-2" />
@@ -40,7 +38,6 @@ const Contact = () => {
             <p className="text-gray-400 font-mono">We're here to assist you!</p>
           </div>
 
-          {/* Contact information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
             <div className="group p-6 rounded-lg bg-slate-800/50 border border-cyan-500/20 hover:border-cyan-500/50 backdrop-blur-lg transform hover:-translate-y-1 transition-all duration-300">
               <div className="flex items-center mb-4">

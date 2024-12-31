@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Terminal, Code2, Network, Cpu, Server, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const AboutSection = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const navigate = useNavigate();
   const [terminalText, setTerminalText] = useState('');
   const fullText = '> sys.about.initialize()';
 
@@ -28,7 +30,6 @@ const AboutSection = () => {
 
   return (
     <div className="min-h-screen bg-slate-900 relative overflow-hidden">
-      {/* Animated background elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-32 h-32 border border-cyan-500/20 rounded-lg transform rotate-45 animate-pulse" />
         <div className="absolute bottom-40 right-10 w-40 h-40 border border-cyan-500/20 rounded-full animate-spin-slow" />
@@ -37,7 +38,6 @@ const AboutSection = () => {
 
       <div className="relative container mx-auto px-6 py-20">
         <div className={`transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-          {/* Terminal-style header */}
           <div className="text-center mb-16">
             <div className="inline-block bg-slate-800/50 rounded-xl p-4 mb-6 border border-cyan-500/20">
               <Terminal className="inline-block w-6 h-6 text-cyan-400 mr-2" />
@@ -50,7 +50,6 @@ const AboutSection = () => {
             <p className="text-gray-400 font-mono">Connecting Minds, Building Futures</p>
           </div>
 
-          {/* Metric cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {metrics.map(({ icon: Icon, title, value, detail }, index) => (
               <div 
@@ -70,7 +69,6 @@ const AboutSection = () => {
             ))}
           </div>
 
-          {/* Info panels */}
           <div className="grid md:grid-cols-2 gap-8">
             <div className="relative p-8 rounded-lg bg-slate-800/50 border border-cyan-500/20 overflow-hidden group hover:border-cyan-500/50 transition-colors duration-300">
               <div className="absolute inset-0 bg-grid-pattern opacity-5 group-hover:opacity-10 transition-opacity" />
@@ -92,9 +90,8 @@ const AboutSection = () => {
             </div>
           </div>
 
-          {/* CTA */}
           <div className="text-center mt-16">
-            <button className="group px-8 py-3 rounded-lg bg-cyan-500 text-white font-mono hover:bg-cyan-400 transition-all duration-300">
+            <button className="group px-8 py-3 rounded-lg bg-cyan-500 text-white font-mono hover:bg-cyan-400 transition-all duration-300" onClick={() => navigate('/auth')}>
               join.network()
               <Sparkles className="inline-block ml-2 w-4 h-4 group-hover:rotate-12 transition-transform" />
             </button>
