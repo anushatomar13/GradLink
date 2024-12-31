@@ -1,74 +1,85 @@
-<<<<<<< HEAD
-# Getting Started with Create React App
+# GradLink
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+GradLink is a web application designed to enhance alumni association engagement by providing seamless connectivity and a platform for networking, donations, events, and more. This project aims to address common challenges faced by alumni associations, such as low engagement, inefficient donation processes, and limited networking opportunities.
 
-## Available Scripts
+## Problem Statement
 
-In the project directory, you can run:
+Alumni associations often face challenges like:
+- Low engagement among alumni.
+- Inefficient donation processes.
+- Limited networking opportunities.
+- Lack of structured success story tracking.
 
-### `npm start`
+## Abstract
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+GradLink is a comprehensive solution for alumni associations, offering:
+- A web app for seamless connectivity.
+- Features for networking, donations, and event management.
+- Secure and scalable infrastructure to support engagement.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Key Features (In Progress)
 
-### `npm test`
+- **Alumni Registration**
+- **Networking Hub**
+- **Donation Portal**
+- **Job Portal**
+- **Alumni Directory and Success Story Tracking**
+- **Events and Reunions**
+- **Feedback and Surveys**
+- And more.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Tech Stack
 
-### `npm run build`
+### Frontend
+- **React.js**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Backend
+- **Node.js**
+- **Express.js**
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Database
+- **MongoDB**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Current Progress (Enhanced Overview)
 
-### `npm run eject`
+GradLink has achieved significant milestones in its development phase, particularly in the frontend aspect of the application. Below is a detailed account of the work completed so far:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. **Foundational Frontend Setup**:
+   - The application’s frontend architecture has been built using **React.js**, a robust library for crafting dynamic and interactive user interfaces. This ensures a seamless and responsive experience for users across devices.
+   - A modular component-based structure has been implemented, which enhances maintainability, scalability, and reusability of UI elements.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+2. **Core UI Components**:
+   - Essential UI components, including the **homepage**, **navigation bar**, and **footer**, have been designed and are fully functional. These serve as the framework for building further functionalities.
+   - Custom hooks and state management strategies have been implemented to handle user interactions efficiently.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+3. **Routing System**:
+   - A robust routing system has been set up using **React Router**, enabling smooth navigation between different pages such as the Home, Networking Hub, Donation Portal, and Events pages.
+   - Dynamic route handling has been prepared to facilitate personalized user experiences, such as alumni-specific profiles and event details.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+4. **Preliminary Design Elements**:
+   - GradLink boasts a visually appealing, user-friendly design with a focus on accessibility. The color scheme and typography reflect a professional and welcoming vibe.
+   - Responsive design principles have been incorporated, ensuring compatibility across desktop, tablet, and mobile devices.
 
-## Learn More
+5. **Integration of External Libraries**:
+   - Libraries such as **Axios** for API calls and **Formik** for form handling have been integrated to streamline future developments like alumni registration and donation processes.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+6. **Collaboration and Version Control**:
+   - The project has been structured using **Git** and hosted on **GitHub**, ensuring smooth collaboration among team members and proper version tracking.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+7. **Prototype Development**:
+   - A working prototype of the alumni registration page has been developed, laying the groundwork for backend integration.
+   - Wireframes and mockups for key sections, such as the Networking Hub and Donation Portal, have been created to align the team’s vision and guide future development.
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Next Steps
 
-### Analyzing the Bundle Size
+- Backend setup and database integration.
+- Developing key features such as alumni registration, networking hub, and donation portal.
+- Testing, debugging, and frontend-backend integration.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+Stay connected and engaged with GradLink!
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-=======
-# AlumniPortalWE
->>>>>>> fdc3c3042cb03b70f7c9d14c96ba8229c29c3a0e
+[GradLink Live Link](https://alumniportalwe.netlify.app/)
