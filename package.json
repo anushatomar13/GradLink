@@ -4,8 +4,8 @@
   "private": true,
   "predeploy": "npm run build",
   "deploy": "gh-pages -d build",
-
   "dependencies": {
+    "@auth0/auth0-react": "^2.3.0",
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
     "jspdf": "^2.5.2",
@@ -13,10 +13,11 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.1",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "react-scroll": "^1.9.0"
   },
   "scripts": {
+    "dev": "react-scripts start",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
