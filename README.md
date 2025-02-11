@@ -62,11 +62,17 @@ GradLink has achieved significant milestones in its development phase, particula
 
 5. **Integration of External Libraries**:
    - Libraries such as **Axios** for API calls and **Formik** for form handling have been integrated to streamline future developments like alumni registration and donation processes.
+  
+6. **Authentication Setup**:
+   - **Auth0 authentication** has been integrated to ensure secure login and access control, allowing alumni to log in using their existing credentials while maintaining security and ease of access.
 
-6. **Collaboration and Version Control**:
+7. **LinkedIn Profile Web Scraping**:
+   - Implemented a **web scraping mechanism** to extract LinkedIn profiles of alumni for automatic directory updates and professional networking enhancements.
+
+8. **Collaboration and Version Control**:
    - The project has been structured using **Git** and hosted on **GitHub**, ensuring smooth collaboration among team members and proper version tracking.
 
-7. **Prototype Development**:
+9. **Prototype Development**:
    - A working prototype of the alumni registration page has been developed, laying the groundwork for backend integration.
    - Wireframes and mockups for key sections, such as the Networking Hub and Donation Portal, have been created to align the team’s vision and guide future development.
 
@@ -75,6 +81,7 @@ GradLink has achieved significant milestones in its development phase, particula
 ## Next Steps
 
 - Backend setup and database integration.
+- Expanding LinkedIn profile web scraping for better alumni insights.
 - Developing key features such as alumni registration, networking hub, and donation portal.
 - Testing, debugging, and frontend-backend integration.
 
