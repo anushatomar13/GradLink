@@ -86,7 +86,8 @@ const Navbar = () => {
             {user ? (
               <>
                 <span className="text-sm font-mono text-cyan-400">
-                Hi, {user?.displayName || "Guest"}
+                {"<"}Hi_{user?.displayName || "Guest"}{"/>"}
+
                 </span>
                 <button
                   onClick={handleLogout}

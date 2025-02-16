@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Search, Bell, MessageSquare, Calendar, Briefcase,
-  Book, Users, Award, Settings, ChevronDown, Menu, X as CloseIcon
+  Search, Bell, MessageSquare, Menu, X as CloseIcon
 } from 'lucide-react';
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase"; 
 const InstituteSelect = ({ onSelect }) => {
   const institutes = [
@@ -145,10 +144,7 @@ const LoginForm = () => {
 const Dashboard = () => {
   //const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [user, setUser] = useState(null);
-  const [notifications] = useState([
-    { id: 1, text: "New job posting in your field", time: "2h ago" },
-    { id: 2, text: "Upcoming alumni meetup", time: "1d ago" },
-  ]);
+ 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
@@ -293,43 +289,94 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="bg-gray-800 rounded-lg p-4 md:p-6 border border-cyan-400/20">
-              <h3 className="text-xl font-bold text-white mb-4">Recent Notifications</h3>
-              <div className="space-y-4">
-                {notifications.map(notif => (
-                  <div key={notif.id} className="flex items-center justify-between p-3 md:p-4 bg-gray-700/50 rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <Bell className="w-5 h-5 text-cyan-400" />
-                      <div>
-                        <p className="text-white text-sm md:text-base">{notif.text}</p>
-                        <p className="text-gray-400 text-xs md:text-sm">{notif.time}</p>
-                      </div>
-                    </div>
-                    <ChevronDown className="w-5 h-5 text-gray-400" />
-                  </div>
-                ))}
-              </div>
-            </div>
+            <div className="bg-gray-800 rounded-lg p-4 md:p-6 border border-cyan-400/20 min-h-[527px]">
+  <h3 className="text-xl font-bold text-white mb-4">
+    Welcome, {user ? user.displayName || user.email?.split("@")[0] : "Guest"}!
+  </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              {[
-                { icon: Calendar, title: 'Events', desc: 'Upcoming alumni gatherings' },
-                { icon: Briefcase, title: 'Jobs', desc: 'Career opportunities' },
-                { icon: Book, title: 'Resources', desc: 'Learning materials' },
-                { icon: Users, title: 'Network', desc: 'Connect with alumni' },
-                { icon: Award, title: 'Achievements', desc: 'Your milestones' },
-                { icon: Settings, title: 'Settings', desc: 'Account preferences' }
-              ].map((feature, i) => (
-                <button key={i} className="p-4 md:p-6 bg-gray-800 rounded-lg border border-cyan-400/20 
-                                       hover:border-cyan-400/50 transition-all duration-300 
-                                       text-left group">
-                  <feature.icon className="w-6 h-6 md:w-8 md:h-8 text-cyan-400 mb-3 md:mb-4 
-                                       group-hover:text-cyan-300 transition-colors duration-300" />
-                  <h3 className="text-base md:text-lg font-semibold text-white mb-1 md:mb-2">{feature.title}</h3>
-                  <p className="text-gray-400 text-xs md:text-sm">{feature.desc}</p>
-                </button>
-              ))}
-            </div>
+  {/* Form Below Welcome Message */}
+  <form className="space-y-4 text-white">
+    {/* Alumni or Student Selection */}
+    <div>
+      <label className="block text-sm font-medium mb-2">Who are you?</label>
+      <div className="flex space-x-4">
+        <label className="inline-flex items-center">
+          <input type="radio" name="role" value="alumni" className="form-radio text-cyan-400" />
+          <span className="ml-2">Alumni</span>
+        </label>
+        <label className="inline-flex items-center">
+          <input type="radio" name="role" value="student" className="form-radio text-cyan-400" />
+          <span className="ml-2">Student</span>
+        </label>
+      </div>
+    </div>
+
+    {/* College Dropdown */}
+    <div>
+      <label className="block text-sm font-medium mb-2">Select Your College</label>
+      <select className="w-full p-2 border border-gray-600 rounded bg-gray-900 text-white">
+        <option value="iit_bombay">Indian Institute of Technology (IIT) Bombay</option>
+    <option value="iit_delhi">Indian Institute of Technology (IIT) Delhi</option>
+    <option value="iit_kanpur">Indian Institute of Technology (IIT) Kanpur</option>
+    <option value="iit_kharagpur">Indian Institute of Technology (IIT) Kharagpur</option>
+    <option value="rgipt">Rajiv Gandhi Institute of Petroleum Technology</option>
+    <option value="iit_madras">Indian Institute of Technology (IIT) Madras</option>
+    <option value="iit_roorkee">Indian Institute of Technology (IIT) Roorkee</option>
+    <option value="iisc_bangalore">Indian Institute of Science (IISc) Bangalore</option>
+    <option value="jnu">Jawaharlal Nehru University (JNU), New Delhi</option>
+    <option value="du">University of Delhi (DU), New Delhi</option>
+    <option value="iim_ahmedabad">Indian Institute of Management (IIM) Ahmedabad</option>
+    <option value="iim_bangalore">Indian Institute of Management (IIM) Bangalore</option>
+    <option value="iim_calcutta">Indian Institute of Management (IIM) Calcutta</option>
+    <option value="bits_pilani">BITS Pilani (Birla Institute of Technology and Science)</option>
+    <option value="vit_vellore">VIT University, Vellore</option>
+    <option value="manipal">Manipal Academy of Higher Education (MAHE), Manipal</option>
+      </select>
+    </div>
+
+    {/* Current Company/Organization */}
+    <div>
+      <label className="block text-sm font-medium mb-2">Current Company/Organization</label>
+      <input
+        type="text"
+        placeholder="For example: Tech Corp, Cognizant"
+        className="w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
+      />
+    </div>
+    {/* Current Designation*/}
+    <div>
+      <label className="block text-sm font-medium mb-2">Designation</label>
+      <input
+        type="text"
+        placeholder="For example: Junior Developer, SDE-2, etc"
+        className="w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
+      />
+    </div>
+
+    {/* Graduating Batch Dropdown */}
+    <div>
+      <label className="block text-sm font-medium mb-2">Graduating Batch</label>
+      <select className="w-full p-2 border border-gray-600 rounded bg-gray-900 text-white">
+        <option value="">Select Batch</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+      </select>
+    </div>
+
+    {/* Submit Button */}
+    <button
+      type="submit"
+      className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-2 rounded"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+
+          
           </div>
         </div>
       </div>
