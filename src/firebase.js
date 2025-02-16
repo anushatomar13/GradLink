@@ -1,23 +1,24 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore"; // Import Firestore
+import { getFirestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration
+// Debugging: Check if the environment variables are loaded
+console.log("Firebase API Key:", process.env.REACT_APP_FIREBASE_API_KEY);
+
+// Firebase configuration using environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyCRvaLcU8X--tCZ_pcRZecEAW95X5WY6a0",
-  authDomain: "gradlink-80a83.firebaseapp.com",
-  projectId: "gradlink-80a83",
-  storageBucket: "gradlink-80a83.appspot.com", // Fix incorrect domain
-  messagingSenderId: "323160039273",
-  appId: "1:323160039273:web:330e05a8e63b1c204667f8",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app); // Initialize Firestore
+const db = getFirestore(app);
 
-// Export auth and db
 export { auth, db };
 export default app;
