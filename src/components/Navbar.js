@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Search } from 'lucide-react';
-//import { useAuth0 } from "@auth0/auth0-react";
+import React, { useState, useEffect } from "react";
+import { Search } from "lucide-react";
+import { auth } from "../firebase"; // ✅ Import Firebase auth
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 const Logo = () => (
   <svg viewBox="0 0 100 100" className="h-10 w-10">
@@ -26,7 +28,26 @@ const Logo = () => (
 
 const Navbar = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  // const { loginWithRedirect, isAuthenticated, logout, user} = useAuth0();
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate(); // ✅ Hook for navigation
+
+  // 🔹 Track user login state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // 🔹 Logout function
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/login"); // Redirect after logout
+    } catch (error) {
+      console.error("Logout Error:", error.message);
+    }
+  };
 
   return (
     <nav className="relative bg-gray-900/95 backdrop-blur-sm text-cyan-400 py-3">
@@ -48,7 +69,7 @@ const Navbar = () => {
 
           {/* Navigation Links */}
           <div className="flex items-center space-x-8 mt-3 sm:mt-0">
-            {['Dashboard', 'Events', 'Connect', 'About', 'Donate'].map((item) => (
+            {["Dashboard", "Events", "Connect", "About", "Donate"].map((item) => (
               <a
                 key={item}
                 href={`/${item.toLowerCase()}`}
@@ -58,13 +79,30 @@ const Navbar = () => {
                 <span className="absolute -bottom-1 left-0 w-full h-px bg-cyan-400/50 scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
               </a>
             ))}
-{/* 
-            {isAuthenticated && user && (
-  <span className="text-sm font-mono text-cyan-400">
-    {`Hi, ${user.given_name || user.nickname || user.name || user.email.split('@')[0]}`}
-  </span>
-)} */}
+          </div>
 
+          {/* Authentication Links */}
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <>
+                <span className="text-sm font-mono text-cyan-400">
+                  Hi, {user.displayName || user.email.split("@")[0]}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="text-sm font-mono text-red-400 hover:text-red-300"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <a
+                href="/register"
+                className="text-sm font-mono text-cyan-400 hover:text-cyan-300"
+              >
+                Login/Signup
+              </a>
+            )}
           </div>
 
           {/* Search Input */}
@@ -77,7 +115,7 @@ const Navbar = () => {
                        text-white font-mono text-sm
                        focus:outline-none focus:border-cyan-400/50
                        transition-all duration-200
-                       ${isSearchFocused ? 'shadow-[0_0_10px_rgba(0,255,255,0.1)]' : ''}`}
+                       ${isSearchFocused ? "shadow-[0_0_10px_rgba(0,255,255,0.1)]" : ""}`}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}
             />
@@ -90,5 +128,6 @@ const Navbar = () => {
     </nav>
   );
 };
+
 
 export default Navbar;
