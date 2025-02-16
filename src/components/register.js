@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -15,7 +15,10 @@ const Register = () => {
         setError('');
         const auth = getAuth();
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(userCredential.user, {
+                displayName: firstName, // Store first name as displayName
+            });
             navigate('/dashboard');
         } catch (err) {
             setError(err.message);
@@ -29,28 +32,28 @@ const Register = () => {
                 {error && <p className="text-red-500 text-center">{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-4">
-                        <input 
+                        <input
                             type="text"
                             placeholder="First Name"
                             className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
                         />
-                        <input 
+                        <input
                             type="text"
                             placeholder="Last Name"
                             className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
                         />
-                        <input 
+                        <input
                             type="email"
                             placeholder="Email"
                             className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
-                        <input 
+                        <input
                             type="password"
                             placeholder="Password"
                             className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
@@ -58,7 +61,7 @@ const Register = () => {
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
-                    <button 
+                    <button
                         type="submit"
                         className="w-full py-3 bg-cyan-400 text-gray-900 rounded hover:bg-cyan-300 transition-colors duration-300 font-mono"
                     >

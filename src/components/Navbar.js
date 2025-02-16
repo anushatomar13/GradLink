@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
-import { auth } from "../firebase"; // ✅ Import Firebase auth
+import { auth } from "../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -29,7 +29,7 @@ const Logo = () => (
 const Navbar = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [user, setUser] = useState(null);
-  const navigate = useNavigate(); // ✅ Hook for navigation
+  const navigate = useNavigate();
 
   // 🔹 Track user login state
   useEffect(() => {
@@ -86,7 +86,7 @@ const Navbar = () => {
             {user ? (
               <>
                 <span className="text-sm font-mono text-cyan-400">
-                  Hi, {user.displayName || user.email.split("@")[0]}
+                Hi, {user?.displayName || "Guest"}
                 </span>
                 <button
                   onClick={handleLogout}

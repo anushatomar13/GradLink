@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
+
 import HeroSection from "./components/HeroSection";
 import FeaturesSection from "./components/FeaturesSection";
 import Navbar from './components/Navbar';
@@ -14,9 +15,9 @@ import Support from './components/Support';
 import { AuthFlow, Dashboard } from './components/AuthFlow';
 import ConnectPage from './components/ConnectPage';
 import DonationPage from './components/DonationPage';
-import { auth } from "./firebase";
 
-import { ToastContainer } from 'react-toastify'; // ✅ Corrected import
+import { auth } from "./firebase";
+import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 
 import Login from "./components/login";

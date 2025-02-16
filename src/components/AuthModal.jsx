@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
-import { auth } from "../firebase"; // ✅ Import Firebase auth
+import { auth } from "../firebase"; 
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import AuthModal from "./AuthModal"; // ✅ Import the authentication modal
+import AuthModal from "./AuthModal"; 
 
 const Navbar = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);

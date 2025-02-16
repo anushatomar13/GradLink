@@ -1,35 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-    Search, Bell, MessageSquare, Calendar, Briefcase, 
-    Book, Users, Award, Settings, ChevronDown, Menu, X as CloseIcon
-  } from 'lucide-react';
-  import { onAuthStateChanged, signOut } from "firebase/auth";
-  import { auth } from "../firebase"; // ✅ Import Firebase auth
+import {
+  Search, Bell, MessageSquare, Calendar, Briefcase,
+  Book, Users, Award, Settings, ChevronDown, Menu, X as CloseIcon
+} from 'lucide-react';
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "../firebase"; 
 const InstituteSelect = ({ onSelect }) => {
-    const institutes = [
-        "Indian Institute of Technology (IIT) Bombay",
-        "Indian Institute of Technology (IIT) Delhi",
-        "Indian Institute of Technology (IIT) Kanpur",
-        "Indian Institute of Technology (IIT) Kharagpur",
-        "Rajiv Gandhi Institute of Petroleum Technology",
-        "Indian Institute of Technology (IIT) Madras",
-        "Indian Institute of Technology (IIT) Roorkee",
-        "Indian Institute of Science (IISc) Bangalore",
-        "Jawaharlal Nehru University (JNU), New Delhi",
-        "University of Delhi (DU), New Delhi",
-        "Indian Institute of Management (IIM) Ahmedabad",
-        "Indian Institute of Management (IIM) Bangalore",
-        "Indian Institute of Management (IIM) Calcutta",
-        "BITS Pilani (Birla Institute of Technology and Science)",
-        "VIT University, Vellore",
-        "Manipal Academy of Higher Education (MAHE), Manipal"
-      ];
-      
+  const institutes = [
+    "Indian Institute of Technology (IIT) Bombay",
+    "Indian Institute of Technology (IIT) Delhi",
+    "Indian Institute of Technology (IIT) Kanpur",
+    "Indian Institute of Technology (IIT) Kharagpur",
+    "Rajiv Gandhi Institute of Petroleum Technology",
+    "Indian Institute of Technology (IIT) Madras",
+    "Indian Institute of Technology (IIT) Roorkee",
+    "Indian Institute of Science (IISc) Bangalore",
+    "Jawaharlal Nehru University (JNU), New Delhi",
+    "University of Delhi (DU), New Delhi",
+    "Indian Institute of Management (IIM) Ahmedabad",
+    "Indian Institute of Management (IIM) Bangalore",
+    "Indian Institute of Management (IIM) Calcutta",
+    "BITS Pilani (Birla Institute of Technology and Science)",
+    "VIT University, Vellore",
+    "Manipal Academy of Higher Education (MAHE), Manipal"
+  ];
+
   return (
     <div className="max-w-md mx-auto p-8 bg-gray-800 rounded-lg shadow-xl mt-10 mb-10">
       <h2 className="text-2xl font-bold text-cyan-400 mb-6">Select Your Institute</h2>
-      <select 
+      <select
         className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30 focus:border-cyan-400"
         onChange={(e) => onSelect(e.target.value)}
       >
@@ -57,7 +57,7 @@ const SignupForm = ({ institute }) => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-cyan-400 mb-2">Status</label>
-          <select 
+          <select
             className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
             onChange={(e) => setIsAlumni(e.target.value === 'alumni')}
           >
@@ -69,8 +69,8 @@ const SignupForm = ({ institute }) => {
         {isAlumni && (
           <div>
             <label className="block text-cyan-400 mb-2">Graduation Year</label>
-            <input 
-              type="number" 
+            <input
+              type="number"
               className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
               min="1900"
               max={new Date().getFullYear()}
@@ -79,24 +79,24 @@ const SignupForm = ({ institute }) => {
         )}
 
         <div className="space-y-4">
-          <input 
+          <input
             type="text"
             placeholder="Full Name"
             className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
           />
-          <input 
+          <input
             type="email"
             placeholder="Email"
             className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
           />
-          <input 
+          <input
             type="password"
             placeholder="Password"
             className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
           />
         </div>
 
-        <button 
+        <button
           type="submit"
           className="w-full py-3 bg-cyan-400 text-gray-900 rounded hover:bg-cyan-300 
                    transition-colors duration-300 font-mono"
@@ -120,17 +120,17 @@ const LoginForm = () => {
     <div className="max-w-md mx-auto p-8 bg-gray-800 rounded-lg shadow-xl">
       <h2 className="text-2xl font-bold text-cyan-400 mb-6">Login</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <input 
+        <input
           type="email"
           placeholder="Email"
           className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
         />
-        <input 
+        <input
           type="password"
           placeholder="Password"
           className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
         />
-        <button 
+        <button
           type="submit"
           className="w-full py-3 bg-cyan-400 text-gray-900 rounded hover:bg-cyan-300 
                    transition-colors duration-300 font-mono"
@@ -143,8 +143,8 @@ const LoginForm = () => {
 };
 
 const Dashboard = () => {
-   const [isSearchFocused, setIsSearchFocused] = useState(false);
-    const [user, setUser] = useState(null);
+  //const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [user, setUser] = useState(null);
   const [notifications] = useState([
     { id: 1, text: "New job posting in your field", time: "2h ago" },
     { id: 2, text: "Upcoming alumni meetup", time: "1d ago" },
@@ -156,7 +156,7 @@ const Dashboard = () => {
     return () => unsubscribe();
   }, []);
 
-  
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const ProfileContent = ({ isMobile = false }) => (
@@ -169,9 +169,12 @@ const Dashboard = () => {
             className="w-full h-full object-cover"
           />
         </div>
+
         <h2 className="text-xl font-bold text-white mb-1">{user ? user.displayName || user.email?.split("@")[0] : "Guest"}
         </h2>
+
         <p className="text-cyan-400 text-sm">Class of 2020</p>
+        
         <p className="text-gray-400 text-sm mt-2">Software Engineer @ Tech Corp</p>
       </div>
 
@@ -210,7 +213,7 @@ const Dashboard = () => {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <button 
+              <button
                 className="md:hidden text-cyan-400"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
@@ -226,7 +229,7 @@ const Dashboard = () => {
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-cyan-400/50 w-4 h-4" />
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-6">
               <button className="relative text-cyan-400 hover:text-cyan-300">
                 <Bell className="w-5 h-5" />
@@ -240,15 +243,13 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className={`md:hidden fixed inset-0 bg-gray-900/90 z-50 transition-opacity duration-300 ${
-        isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-      }`}>
-        <div className={`w-80 bg-gray-800 h-full overflow-y-auto transition-transform duration-300 ${
-          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      <div className={`md:hidden fixed inset-0 bg-gray-900/90 z-50 transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}>
+        <div className={`w-80 bg-gray-800 h-full overflow-y-auto transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}>
           <div className="p-4">
             <div className="flex justify-end mb-4">
-              <button 
+              <button
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-cyan-400 hover:text-cyan-300"
               >
@@ -347,7 +348,7 @@ const AuthFlow = () => {
   return (
     <div className="min-h-screen bg-gray-900 py-12 px-4">
       <div className="max-w-md mx-auto mb-8">
-        <button 
+        <button
           onClick={() => setIsNewUser(!isNewUser)}
           className="text-cyan-400 hover:text-cyan-300"
         >
