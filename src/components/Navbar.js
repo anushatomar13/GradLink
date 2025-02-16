@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
-import { useAuth0 } from "@auth0/auth0-react";
+//import { useAuth0 } from "@auth0/auth0-react";
 
 const Logo = () => (
   <svg viewBox="0 0 100 100" className="h-10 w-10">
@@ -26,7 +26,7 @@ const Logo = () => (
 
 const Navbar = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const { loginWithRedirect, isAuthenticated, logout, user} = useAuth0();
+  // const { loginWithRedirect, isAuthenticated, logout, user} = useAuth0();
 
   return (
     <nav className="relative bg-gray-900/95 backdrop-blur-sm text-cyan-400 py-3">
@@ -58,13 +58,12 @@ const Navbar = () => {
                 <span className="absolute -bottom-1 left-0 w-full h-px bg-cyan-400/50 scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
               </a>
             ))}
-
-            {/* Show user name if authenticated */}
+{/* 
             {isAuthenticated && user && (
   <span className="text-sm font-mono text-cyan-400">
     {`Hi, ${user.given_name || user.nickname || user.name || user.email.split('@')[0]}`}
   </span>
-)}
+)} */}
 
           </div>
 

@@ -5,7 +5,6 @@
   "predeploy": "npm run build",
   "deploy": "gh-pages -d build",
   "dependencies": {
-    "@auth0/auth0-react": "^2.3.0",
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
     "jspdf": "^2.5.2",

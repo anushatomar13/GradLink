@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth0 } from "@auth0/auth0-react";
+//import { useAuth0 } from "@auth0/auth0-react";
 
 
 const scrollToSection = (sectionId) => {
@@ -9,7 +9,7 @@ const scrollToSection = (sectionId) => {
 };
 
 const HeroSection = () => {
-  const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
+  //const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
   const canvasRef = useRef(null);
   const navigate = useNavigate();
 
@@ -114,7 +114,8 @@ const HeroSection = () => {
 
           <div className="flex flex-wrap justify-center gap-6">
 
-          {isAuthenticated ? (
+          {/* {isAuthenticated ? (
+            
   <button
     onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
     className="group relative px-8 py-4 bg-transparent border border-cyan-400 text-cyan-400 
@@ -143,7 +144,15 @@ const HeroSection = () => {
     />
     &lt;Join_Network /&gt;
   </button>
-)}
+)} */}
+ <button className="group relative px-8 py-4 bg-transparent border border-cyan-400 text-cyan-400 
+                           hover:bg-cyan-400 hover:text-gray-900 transition-all duration-1000
+                           overflow-hidden font-mono" onClick={() => navigate('/auth')}>
+              <div className="absolute inset-0 w-1 bg-cyan-400 transition-all duration-300
+                           group-hover:w-full -z-10" />
+              &lt;Join_Network /&gt;
+            </button>
+
             <button className="group relative px-8 py-4 bg-cyan-400 text-gray-900 
                            hover:bg-cyan-300 transition-all duration-300
                            font-mono" onClick={() => scrollToSection('features')}>
