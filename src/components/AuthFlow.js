@@ -4,7 +4,7 @@ import {
   Search, Bell, MessageSquare, Menu, X as CloseIcon
 } from 'lucide-react';
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase"; 
+import { auth } from "../firebase";
 const InstituteSelect = ({ onSelect }) => {
   const institutes = [
     "Indian Institute of Technology (IIT) Bombay",
@@ -144,7 +144,7 @@ const LoginForm = () => {
 const Dashboard = () => {
   //const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [user, setUser] = useState(null);
- 
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
@@ -170,7 +170,7 @@ const Dashboard = () => {
         </h2>
 
         <p className="text-cyan-400 text-sm">Class of 2020</p>
-        
+
         <p className="text-gray-400 text-sm mt-2">Software Engineer @ Tech Corp</p>
       </div>
 
@@ -290,93 +290,93 @@ const Dashboard = () => {
             </div>
 
             <div className="bg-gray-800 rounded-lg p-4 md:p-6 border border-cyan-400/20 min-h-[527px]">
-  <h3 className="text-xl font-bold text-white mb-4">
-    Welcome, {user ? user.displayName || user.email?.split("@")[0] : "Guest"}!
-  </h3>
+              <h3 className="text-xl font-bold text-white mb-4">
+                Welcome, {user ? user.displayName || user.email?.split("@")[0] : "Guest"}!
+              </h3>
 
-  {/* Form Below Welcome Message */}
-  <form className="space-y-4 text-white">
-    {/* Alumni or Student Selection */}
-    <div>
-      <label className="block text-sm font-medium mb-2">Who are you?</label>
-      <div className="flex space-x-4">
-        <label className="inline-flex items-center">
-          <input type="radio" name="role" value="alumni" className="form-radio text-cyan-400" />
-          <span className="ml-2">Alumni</span>
-        </label>
-        <label className="inline-flex items-center">
-          <input type="radio" name="role" value="student" className="form-radio text-cyan-400" />
-          <span className="ml-2">Student</span>
-        </label>
-      </div>
-    </div>
+              {/* Form Below Welcome Message */}
+              <form className="space-y-4 text-white">
+                {/* Alumni or Student Selection */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Who are you?</label>
+                  <div className="flex space-x-4">
+                    <label className="inline-flex items-center">
+                      <input type="radio" name="role" value="alumni" className="form-radio text-cyan-400" />
+                      <span className="ml-2">Alumni</span>
+                    </label>
+                    <label className="inline-flex items-center">
+                      <input type="radio" name="role" value="student" className="form-radio text-cyan-400" />
+                      <span className="ml-2">Student</span>
+                    </label>
+                  </div>
+                </div>
 
-    {/* College Dropdown */}
-    <div>
-      <label className="block text-sm font-medium mb-2">Select Your College</label>
-      <select className="w-full p-2 border border-gray-600 rounded bg-gray-900 text-white">
-        <option value="iit_bombay">Indian Institute of Technology (IIT) Bombay</option>
-    <option value="iit_delhi">Indian Institute of Technology (IIT) Delhi</option>
-    <option value="iit_kanpur">Indian Institute of Technology (IIT) Kanpur</option>
-    <option value="iit_kharagpur">Indian Institute of Technology (IIT) Kharagpur</option>
-    <option value="rgipt">Rajiv Gandhi Institute of Petroleum Technology</option>
-    <option value="iit_madras">Indian Institute of Technology (IIT) Madras</option>
-    <option value="iit_roorkee">Indian Institute of Technology (IIT) Roorkee</option>
-    <option value="iisc_bangalore">Indian Institute of Science (IISc) Bangalore</option>
-    <option value="jnu">Jawaharlal Nehru University (JNU), New Delhi</option>
-    <option value="du">University of Delhi (DU), New Delhi</option>
-    <option value="iim_ahmedabad">Indian Institute of Management (IIM) Ahmedabad</option>
-    <option value="iim_bangalore">Indian Institute of Management (IIM) Bangalore</option>
-    <option value="iim_calcutta">Indian Institute of Management (IIM) Calcutta</option>
-    <option value="bits_pilani">BITS Pilani (Birla Institute of Technology and Science)</option>
-    <option value="vit_vellore">VIT University, Vellore</option>
-    <option value="manipal">Manipal Academy of Higher Education (MAHE), Manipal</option>
-      </select>
-    </div>
+                {/* College Dropdown */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Select Your College</label>
+                  <select className="w-full p-2 border border-gray-600 rounded bg-gray-900 text-white">
+                    <option value="iit_bombay">Indian Institute of Technology (IIT) Bombay</option>
+                    <option value="iit_delhi">Indian Institute of Technology (IIT) Delhi</option>
+                    <option value="iit_kanpur">Indian Institute of Technology (IIT) Kanpur</option>
+                    <option value="iit_kharagpur">Indian Institute of Technology (IIT) Kharagpur</option>
+                    <option value="rgipt">Rajiv Gandhi Institute of Petroleum Technology</option>
+                    <option value="iit_madras">Indian Institute of Technology (IIT) Madras</option>
+                    <option value="iit_roorkee">Indian Institute of Technology (IIT) Roorkee</option>
+                    <option value="iisc_bangalore">Indian Institute of Science (IISc) Bangalore</option>
+                    <option value="jnu">Jawaharlal Nehru University (JNU), New Delhi</option>
+                    <option value="du">University of Delhi (DU), New Delhi</option>
+                    <option value="iim_ahmedabad">Indian Institute of Management (IIM) Ahmedabad</option>
+                    <option value="iim_bangalore">Indian Institute of Management (IIM) Bangalore</option>
+                    <option value="iim_calcutta">Indian Institute of Management (IIM) Calcutta</option>
+                    <option value="bits_pilani">BITS Pilani (Birla Institute of Technology and Science)</option>
+                    <option value="vit_vellore">VIT University, Vellore</option>
+                    <option value="manipal">Manipal Academy of Higher Education (MAHE), Manipal</option>
+                  </select>
+                </div>
 
-    {/* Current Company/Organization */}
-    <div>
-      <label className="block text-sm font-medium mb-2">Current Company/Organization</label>
-      <input
-        type="text"
-        placeholder="For example: Tech Corp, Cognizant"
-        className="w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
-      />
-    </div>
-    {/* Current Designation*/}
-    <div>
-      <label className="block text-sm font-medium mb-2">Designation</label>
-      <input
-        type="text"
-        placeholder="For example: Junior Developer, SDE-2, etc"
-        className="w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
-      />
-    </div>
+                {/* Current Company/Organization */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Current Company/Organization</label>
+                  <input
+                    type="text"
+                    placeholder="For example: Tech Corp, Cognizant"
+                    className="w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
+                  />
+                </div>
+                {/* Current Designation*/}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Designation</label>
+                  <input
+                    type="text"
+                    placeholder="For example: Junior Developer, SDE-2, etc"
+                    className="w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
+                  />
+                </div>
 
-    {/* Graduating Batch Dropdown */}
-    <div>
-      <label className="block text-sm font-medium mb-2">Graduating Batch</label>
-      <select className="w-full p-2 border border-gray-600 rounded bg-gray-900 text-white">
-        <option value="">Select Batch</option>
-        <option value="2020">2020</option>
-        <option value="2021">2021</option>
-        <option value="2022">2022</option>
-        <option value="2023">2023</option>
-        <option value="2024">2024</option>
-      </select>
-    </div>
+                {/* Graduating Batch Dropdown */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Graduating Batch</label>
+                  <select className="w-full p-2 border border-gray-600 rounded bg-gray-900 text-white">
+                    <option value="">Select Batch</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                  </select>
+                </div>
 
-    {/* Submit Button */}
-    <button
-      type="submit"
-      className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-2 rounded"
-    >
-      Submit
-    </button>
-  </form>
-</div>
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-2 rounded"
+                >
+                  Submit
+                </button>
+              </form>
+            </div>
 
-          
+
           </div>
         </div>
       </div>

@@ -34,11 +34,10 @@ GradLink is a comprehensive solution for alumni associations, offering:
 - **React.js**
 
 ### Backend
-- **Node.js**
-- **Express.js**
+- **Firebase for authentication**
 
 ### Database
-- **MongoDB**
+- **Firestore database**
 
 ## Current Progress (Enhanced Overview)
 
@@ -64,7 +63,7 @@ GradLink has achieved significant milestones in its development phase, particula
    - Libraries such as **Axios** for API calls and **Formik** for form handling have been integrated to streamline future developments like alumni registration and donation processes.
   
 6. **Authentication Setup**:
-   - **Auth0 authentication** has been integrated to ensure secure login and access control, allowing alumni to log in using their existing credentials while maintaining security and ease of access.
+   - **Firebase authentication** has been integrated to ensure secure login and access control, allowing alumni to log in using their existing credentials while maintaining security and ease of access.
 
 7. **LinkedIn Profile Web Scraping**:
    - Implemented a **web scraping mechanism** to extract LinkedIn profiles of alumni for automatic directory updates and professional networking enhancements.
