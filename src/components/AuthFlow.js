@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
     Search, Bell, MessageSquare, Calendar, Briefcase, 
     Book, Users, Award, Settings, ChevronDown, Menu, X as CloseIcon
   } from 'lucide-react';
-
+  import { onAuthStateChanged, signOut } from "firebase/auth";
+  import { auth } from "../firebase"; // ✅ Import Firebase auth
 const InstituteSelect = ({ onSelect }) => {
     const institutes = [
         "Indian Institute of Technology (IIT) Bombay",
@@ -142,10 +143,19 @@ const LoginForm = () => {
 };
 
 const Dashboard = () => {
+   const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const [user, setUser] = useState(null);
   const [notifications] = useState([
     { id: 1, text: "New job posting in your field", time: "2h ago" },
     { id: 2, text: "Upcoming alumni meetup", time: "1d ago" },
   ]);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
   
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -159,7 +169,8 @@ const Dashboard = () => {
             className="w-full h-full object-cover"
           />
         </div>
-        <h2 className="text-xl font-bold text-white mb-1">Ruhi Jaiswal</h2>
+        <h2 className="text-xl font-bold text-white mb-1">{user ? user.displayName || user.email?.split("@")[0] : "Guest"}
+        </h2>
         <p className="text-cyan-400 text-sm">Class of 2020</p>
         <p className="text-gray-400 text-sm mt-2">Software Engineer @ Tech Corp</p>
       </div>
