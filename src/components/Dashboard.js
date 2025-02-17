@@ -1,61 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
-import { doc, setDoc } from "firebase/firestore";
-import { db} from "../firebase"; 
+import {collection, addDoc} from "firebase/firestore";
+import {db} from "../firebase"
+import firebase from 'firebase/compat/app';
 
 
 const Dashboard = () => {
-  //const [isSearchFocused, setIsSearchFocused] = useState(false);
-
   const [user, setUser] = useState(null);
-  const [studentOrAlumni, setstudentOrAlumni] = useState("alumni");
+  const [studentOrAlumni, setStudentOrAlumni] = useState("")
   const [college, setCollege] = useState("")
   const [company, setCompany] = useState("")
-  const [designation, setDesignation] = useState("")
-  const [graduatingBatch, setGrraduatingBatch] = useState(2021);
+  const [desgination, setDesignation] = useState("")
+  const [graduatingBatch, setGraduatingBatch] = useState("")
 
-  const[message, setMessage] = useState({error: false, msg:""})
+  const [submittedData, setSubmittedData] = useState(null); // Store submitted details
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage("");
-  
-    // Check if fields are empty
-    if (college === "" || company === "") {
-      setMessage({ error: true, msg: "All fields are mandatory" });
-      return;
-    }
-  
-    if (!user) {
-      setMessage({ error: true, msg: "User not logged in!" });
-      return;
-    }
-  
-    // Create user data object
-    const userData = {
-      uid: user.uid,  // Unique user ID from Firebase Auth
-      name: user.displayName || user.email.split("@")[0],
-      email: user.email,
-      studentOrAlumni,
-      college,
-      company,
-      designation,
-      graduatingBatch,
-      createdAt: new Date(),
-    };
-  
-    try {
-      // Store data in Firestore under "users" collection with user ID as the document ID
-      await setDoc(doc(db, "users", user.uid), userData);
-  
-      setMessage({ error: false, msg: "Profile updated successfully!" });
-      console.log("User data saved successfully in Firestore!");
-    } catch (error) {
-      console.error("Error storing user data:", error);
-      setMessage({ error: true, msg: "Failed to save data!" });
-    }
+const onSubmit = async (e) => {
+  e.preventDefault();
+
+  const userData = {
+    studentOrAlumni,
+    college,
+    company,
+    desgination,
+    graduatingBatch,
   };
+
+  try {
+    await addDoc(collection(db, "users"), userData);
+
+    // Store submitted data in state to display it
+    setSubmittedData(userData);
+
+    // Clear form inputs
+    setStudentOrAlumni("");
+    setCollege("");
+    setCompany("");
+    setDesignation("");
+    setGraduatingBatch("");
+  } catch (error) {
+    console.error("Error adding document: ", error);
+  }
+};
+
   
 
   useEffect(() => {
@@ -71,7 +59,7 @@ const Dashboard = () => {
   const ProfileContent = ({ isMobile = false }) => (
     <div className={`bg-gray-800 rounded-lg ${isMobile ? 'p-4' : 'p-6'} border border-cyan-400/20`}>
       <div className="text-center mb-6">
-        
+
         <div className={`${isMobile ? 'w-20 h-20' : 'w-24 h-24 md:w-32 md:h-32'} mx-auto mb-4 rounded-full overflow-hidden border-4 border-cyan-400/20`}>
           <img
             src="user.jpeg"
@@ -133,7 +121,7 @@ const Dashboard = () => {
               Welcome, {user ? user.displayName || user.email?.split("@")[0] : "Guest"}!
             </h3>
 
-            <form onSubmit={handleSubmit} className= "space-y-6 text-white">
+            <form onSubmit={onSubmit} className="space-y-6 text-white">
               {/* Form Group: Alumni or Student Selection */}
               <div className="form-group">
                 <label className="block text-sm font-medium mb-2">Who are you?</label>
@@ -142,14 +130,19 @@ const Dashboard = () => {
                     <input
                       type="radio"
                       name="role"
+                      className="form-radio text-cyan-400"
                       value={studentOrAlumni}
-                      onChange={(e) => setstudentOrAlumni(e.target.value) }
-                      className="form-radio text-cyan-400" />
+                      onChange={(e) => setStudentOrAlumni(e.target.value)}
+                    />
                     <span className="ml-2">Alumni</span>
                   </label>
                   <label className="inline-flex items-center">
-                    <input type="radio" name="role" value={studentOrAlumni
-                    } onChange={(e) =>setstudentOrAlumni(e.target.value)} className="form-radio text-cyan-400" />
+                    <input 
+                    type="radio" 
+                    name="role" className="form-radio text-cyan-400" 
+                    value={studentOrAlumni}
+                    onChange={(e) => setStudentOrAlumni(e.target.value)}
+                    />
                     <span className="ml-2">Student</span>
                   </label>
                 </div>
@@ -158,10 +151,14 @@ const Dashboard = () => {
               {/* Form Group: College Dropdown */}
               <div className="form-group">
                 <label className="block text-sm font-medium mb-2">Select Your College</label>
-                <select className="form-control w-full p-2 border border-gray-600 rounded bg-gray-900 text-white">
-                  <option value={college}>Indian Institute of Technology (IIT) Bombay</option>
-                  <option value={college}>Indian Institute of Technology (IIT) Delhi</option>
-                  <option value={college}>Indian Institute of Technology (IIT) Kanpur</option>
+                <select 
+                className="form-control w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
+                value={college}
+                onChange={(e) =>  setCollege(e.target.value)}
+                >
+                  <option>Indian Institute of Technology (IIT) Bombay</option>
+                  <option>Indian Institute of Technology (IIT) Delhi</option>
+                  <option>Indian Institute of Technology (IIT) Kanpur</option>
                 </select>
               </div>
 
@@ -170,10 +167,10 @@ const Dashboard = () => {
                 <label className="block text-sm font-medium mb-2">Current Company/Organization</label>
                 <input
                   type="text"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
                   placeholder="For example: Tech Corp, Cognizant"
                   className="form-control w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
                 />
               </div>
 
@@ -182,18 +179,21 @@ const Dashboard = () => {
                 <label className="block text-sm font-medium mb-2">Designation</label>
                 <input
                   type="text"
-                  value={designation}
-                  onChange={(e) => setDesignation(e.target.value)}
                   placeholder="For example: Junior Developer, SDE-2, etc"
                   className="form-control w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
+                  value={desgination}
+                  onChange={(e) => setDesignation(e.target.value)}
                 />
               </div>
 
               {/* Form Group: Graduating Batch Dropdown */}
               <div className="form-group">
                 <label className="block text-sm font-medium mb-2">Graduating Batch</label>
-                <select className="form-control w-full p-2 border border-gray-600 rounded bg-gray-900 text-white">
-                  <option value={graduatingBatch}>Select Batch</option>
+                <select className="form-control w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
+                value={graduatingBatch}
+                onChange={(e) => setGraduatingBatch(e.target.value)}
+                >
+                  <option>Select Batch</option>
                   <option value="2020">2020</option>
                   <option value="2021">2021</option>
                   <option value="2022">2022</option>
@@ -217,7 +217,6 @@ const Dashboard = () => {
       </div>
     </div>
   );
-
 
 };
 

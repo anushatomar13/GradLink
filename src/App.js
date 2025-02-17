@@ -12,7 +12,7 @@ import Privacy from './components/Privacy';
 import Terms from './components/Terms';
 import Contact from './components/Contact';
 import Support from './components/Support';
-import {Dashboard, LoginForm } from './components/AuthFlow';
+import {Dashboard } from './components/Dashboard';
 import ConnectPage from './components/ConnectPage';
 import DonationPage from './components/DonationPage';
 
