@@ -3,7 +3,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase";
-
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -17,16 +17,36 @@ const Dashboard = () => {
   const [graduatingBatch, setGraduatingBatch] = useState("");
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+  
+      if (user) {
+        try {
+          const userDocRef = doc(db, "users", user.uid); // Reference to the user's document
+          const userDocSnap = await getDoc(userDocRef);
+  
+          if (userDocSnap.exists()) {
+            setSubmittedData(userDocSnap.data()); // Load stored data into state
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
     });
+  
     return () => unsubscribe();
   }, []);
+  
 
   // Handle form submission
   const onSubmit = async (e) => {
     e.preventDefault();
-
+  
+    if (!user) {
+      console.error("No user is logged in.");
+      return;
+    }
+  
     const userData = {
       studentOrAlumni,
       college,
@@ -34,16 +54,17 @@ const Dashboard = () => {
       designation,
       graduatingBatch,
     };
-
+  
     try {
-      await addDoc(collection(db, "users"), userData);
-
-      // Save submitted data in state to display it instead of the form
-      setSubmittedData(userData);
+      const userDocRef = doc(db, "users", user.uid); // Set document ID as user UID
+      await setDoc(userDocRef, userData, { merge: true }); // Merge to prevent overwriting
+  
+      setSubmittedData(userData); // Update state with saved data
     } catch (error) {
-      console.error("Error adding document: ", error);
+      console.error("Error saving document: ", error);
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-900">
