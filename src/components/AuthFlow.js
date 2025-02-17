@@ -1,146 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  Search, Bell, MessageSquare, Menu, X as CloseIcon
-} from 'lucide-react';
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { db} from "../firebase"; 
 
-const InstituteSelect = ({ onSelect }) => {
-  const institutes = [
-    "Indian Institute of Technology (IIT) Bombay",
-    "Indian Institute of Technology (IIT) Delhi",
-    "Indian Institute of Technology (IIT) Kanpur",
-    "Indian Institute of Technology (IIT) Kharagpur",
-    "Rajiv Gandhi Institute of Petroleum Technology",
-    "Indian Institute of Technology (IIT) Madras",
-    "Indian Institute of Technology (IIT) Roorkee",
-    "Indian Institute of Science (IISc) Bangalore",
-    "Jawaharlal Nehru University (JNU), New Delhi",
-    "University of Delhi (DU), New Delhi",
-    "Indian Institute of Management (IIM) Ahmedabad",
-    "Indian Institute of Management (IIM) Bangalore",
-    "Indian Institute of Management (IIM) Calcutta",
-    "BITS Pilani (Birla Institute of Technology and Science)",
-    "VIT University, Vellore",
-    "Manipal Academy of Higher Education (MAHE), Manipal"
-  ];
-
-  return (
-    <div className="max-w-md mx-auto p-8 bg-gray-800 rounded-lg shadow-xl mt-10 mb-10">
-      <h2 className="text-2xl font-bold text-cyan-400 mb-6">Select Your Institute</h2>
-      <select
-        className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30 focus:border-cyan-400"
-        onChange={(e) => onSelect(e.target.value)}
-      >
-        <option value="">Select Institute</option>
-        {institutes.map(inst => (
-          <option key={inst} value={inst}>{inst}</option>
-        ))}
-      </select>
-    </div>
-  );
-};
-
-const SignupForm = ({ institute }) => {
-  const navigate = useNavigate();
-  const [isAlumni, setIsAlumni] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    navigate('/dashboard');
-  };
-
-  return (
-    <div className="max-w-md mx-auto p-8 bg-gray-800 rounded-lg shadow-xl">
-      <h2 className="text-2xl font-bold text-cyan-400 mb-6">Sign Up - {institute}</h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-cyan-400 mb-2">Status</label>
-          <select
-            className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
-            onChange={(e) => setIsAlumni(e.target.value === 'alumni')}
-          >
-            <option value="student">Current Student</option>
-            <option value="alumni">Alumni</option>
-          </select>
-        </div>
-
-        {isAlumni && (
-          <div>
-            <label className="block text-cyan-400 mb-2">Graduation Year</label>
-            <input
-              type="number"
-              className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
-              min="1900"
-              max={new Date().getFullYear()}
-            />
-          </div>
-        )}
-
-        <div className="space-y-4">
-          <input
-            type="text"
-            placeholder="Full Name"
-            className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full py-3 bg-cyan-400 text-gray-900 rounded hover:bg-cyan-300 
-                   transition-colors duration-300 font-mono"
-        >
-          Create Account
-        </button>
-      </form>
-    </div>
-  );
-};
-
-const LoginForm = () => {
-  const navigate = useNavigate();
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    navigate('/dashboard');
-  };
-
-  return (
-    <div className="max-w-md mx-auto p-8 bg-gray-800 rounded-lg shadow-xl">
-      <h2 className="text-2xl font-bold text-cyan-400 mb-6">Login</h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-3 bg-gray-700 text-white rounded border border-cyan-400/30"
-        />
-        <button
-          type="submit"
-          className="w-full py-3 bg-cyan-400 text-gray-900 rounded hover:bg-cyan-300 
-                   transition-colors duration-300 font-mono"
-        >
-          Login
-        </button>
-      </form>
-    </div>
-  );
-};
 
 const Dashboard = () => {
   //const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -156,20 +19,44 @@ const Dashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("")
-    if(college == "" || company == ""){
-      setMessage({error: true, msg: "all fields are mandatory"})
+    setMessage("");
+  
+    // Check if fields are empty
+    if (college === "" || company === "") {
+      setMessage({ error: true, msg: "All fields are mandatory" });
       return;
     }
-
-    const newUser = {
+  
+    if (!user) {
+      setMessage({ error: true, msg: "User not logged in!" });
+      return;
+    }
+  
+    // Create user data object
+    const userData = {
+      uid: user.uid,  // Unique user ID from Firebase Auth
+      name: user.displayName || user.email.split("@")[0],
+      email: user.email,
       studentOrAlumni,
       college,
       company,
       designation,
-      graduatingBatch
+      graduatingBatch,
+      createdAt: new Date(),
+    };
+  
+    try {
+      // Store data in Firestore under "users" collection with user ID as the document ID
+      await setDoc(doc(db, "users", user.uid), userData);
+  
+      setMessage({ error: false, msg: "Profile updated successfully!" });
+      console.log("User data saved successfully in Firestore!");
+    } catch (error) {
+      console.error("Error storing user data:", error);
+      setMessage({ error: true, msg: "Failed to save data!" });
     }
   };
+  
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -334,27 +221,5 @@ const Dashboard = () => {
 
 };
 
-const AuthFlow = () => {
-  const [institute, setInstitute] = useState('');
-  const [isNewUser, setIsNewUser] = useState(true);
 
-  if (!institute) {
-    return <InstituteSelect onSelect={setInstitute} />;
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-900 py-12 px-4">
-      <div className="max-w-md mx-auto mb-8">
-        <button
-          onClick={() => setIsNewUser(!isNewUser)}
-          className="text-cyan-400 hover:text-cyan-300"
-        >
-          {isNewUser ? 'Already have an account? Login' : 'Need an account? Sign up'}
-        </button>
-      </div>
-      {isNewUser ? <SignupForm institute={institute} /> : <LoginForm />}
-    </div>
-  );
-};
-
-export { AuthFlow, Dashboard };
+export { Dashboard };

@@ -12,7 +12,7 @@ import Privacy from './components/Privacy';
 import Terms from './components/Terms';
 import Contact from './components/Contact';
 import Support from './components/Support';
-import { AuthFlow, Dashboard } from './components/AuthFlow';
+import {Dashboard, LoginForm } from './components/AuthFlow';
 import ConnectPage from './components/ConnectPage';
 import DonationPage from './components/DonationPage';
 
@@ -41,7 +41,6 @@ const App = () => (
               <FeaturesSection />
             </>
           } />
-          <Route path="/auth" element={<AuthFlow />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<SignUp />} />
           <Route path="/dashboard" element={<Dashboard />} />
