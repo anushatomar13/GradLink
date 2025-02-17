@@ -1,7 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-
 // Debugging: Check if the environment variables are loaded
 console.log("Firebase API Key:", process.env.REACT_APP_FIREBASE_API_KEY);
 
@@ -20,5 +19,5 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app); 
 
-export { auth, db };
+export { auth, db};
 export default app;

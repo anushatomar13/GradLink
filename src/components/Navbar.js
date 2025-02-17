@@ -86,7 +86,7 @@ const Navbar = () => {
             {user ? (
               <>
                 <span className="text-sm font-mono text-cyan-400">
-                {"<"}Hi_{user?.displayName || "Guest"}{"/>"}
+                {'<'}Hi_{user ? user.displayName || user.email?.split("@")[0] : "Guest"}{'/>'}
 
                 </span>
                 <button

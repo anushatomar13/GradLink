@@ -4,6 +4,7 @@ import { auth } from "../firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
+
 const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [submittedData, setSubmittedData] = useState(null); // Stores submitted user details
@@ -58,12 +59,15 @@ const Dashboard = () => {
             <h2 className="text-xl font-bold text-white mb-1">
               {user ? user.displayName || user.email?.split("@")[0] : "Guest"}
             </h2>
-            <p className="text-cyan-400 text-sm">Class of 2020</p>
-            <p className="text-gray-400 text-sm mt-2">Software Engineer @ Tech Corp</p>
+            <p className="text-cyan-400 text-sm">{submittedData ? `Class of ${submittedData.graduatingBatch}` : "Your Graduating Batch"}</p>
+            
+            <p className="text-cyan-400 text-sm mt-2">
+  {submittedData ? `${submittedData.designation} @ ${submittedData.company}` : "Your current company"}
+</p>
           </div>
         </div>
 
-        {/* Main Section (Form or Submitted Data) */}
+        {/* Main Section (Submitted Data) */}
         <div className="md:col-span-9">
           <div className="bg-gray-800 rounded-lg p-6 border border-cyan-400/20 min-h-[527px]">
             <h3 className="text-xl font-bold text-white mb-4">
