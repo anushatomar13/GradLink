@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { auth } from "../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Logo = () => (
   <svg viewBox="0 0 100 100" className="h-10 w-10">
@@ -31,7 +31,6 @@ const Navbar = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  // 🔹 Track user login state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
@@ -39,11 +38,10 @@ const Navbar = () => {
     return () => unsubscribe();
   }, []);
 
-  // 🔹 Logout function
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      navigate("/login"); // Redirect after logout
+      navigate("/login");
     } catch (error) {
       console.error("Logout Error:", error.message);
     }
@@ -56,7 +54,7 @@ const Navbar = () => {
       <div className="relative z-10 max-w-6xl mx-auto px-4">
         <div className="flex items-center justify-between flex-wrap">
           {/* Logo */}
-          <a href="/" className="flex items-center space-x-3 group">
+          <Link to="/" className="flex items-center space-x-3 group">
             <div className="relative">
               <Logo />
               <div className="absolute inset-0 bg-cyan-400/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -65,19 +63,19 @@ const Navbar = () => {
               <span className="opacity-60">sys.</span>
               <span className="text-cyan-400">ALUMNI_NET</span>
             </span>
-          </a>
+          </Link>
 
           {/* Navigation Links */}
           <div className="flex items-center space-x-8 mt-3 sm:mt-0">
             {["Dashboard", "Events", "Connect", "About", "Donate"].map((item) => (
-              <a
+              <Link
                 key={item}
-                href={`/${item.toLowerCase()}`}
+                to={`/${item.toLowerCase()}`}
                 className="relative group font-mono text-sm py-2 hover:text-cyan-300 transition-colors duration-200"
               >
                 <span className="relative z-10">{`<${item}/>`}</span>
                 <span className="absolute -bottom-1 left-0 w-full h-px bg-cyan-400/50 scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
-              </a>
+              </Link>
             ))}
           </div>
 
@@ -86,8 +84,7 @@ const Navbar = () => {
             {user ? (
               <>
                 <span className="text-sm font-mono text-cyan-400">
-                {'<'}Hi_{user ? user.displayName || user.email?.split("@")[0] : "Guest"}{'/>'}
-
+                  {'<'}Hi_{user.displayName || user.email?.split("@")[0]}{'/>'}
                 </span>
                 <button
                   onClick={handleLogout}
@@ -97,12 +94,12 @@ const Navbar = () => {
                 </button>
               </>
             ) : (
-              <a
-                href="/register"
+              <Link
+                to="/register"
                 className="text-sm font-mono text-cyan-400 hover:text-cyan-300"
               >
                 Login/Signup
-              </a>
+              </Link>
             )}
           </div>
 
@@ -129,6 +126,5 @@ const Navbar = () => {
     </nav>
   );
 };
-
 
 export default Navbar;

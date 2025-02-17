@@ -15,7 +15,7 @@ import Support from './components/Support';
 import {Dashboard } from './components/Dashboard';
 import ConnectPage from './components/ConnectPage';
 import DonationPage from './components/DonationPage';
-
+import Events from './components/Events'
 import { auth } from "./firebase";
 import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
@@ -23,11 +23,11 @@ import "react-toastify/dist/ReactToastify.css";
 import Login from "./components/login";
 import SignUp from "./components/register";
 
-const EventsSection = () => (
-  <div className="min-h-screen bg-gray-900 text-cyan-400 p-10">
-    <h1 className="text-3xl font-mono">Events Coming Soon</h1>
-  </div>
-);
+// const EventsSection = () => (
+//   <div className="min-h-screen bg-gray-900 text-cyan-400 p-10">
+//     <h1 className="text-3xl font-mono">Events Coming Soon</h1>
+//   </div>
+// );
 
 const App = () => (
   <Router basename="/">
@@ -44,7 +44,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<SignUp />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/events" element={<EventsSection />} />
+
           <Route path="/connect" element={<ConnectPage />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/privacy" element={<Privacy />} />
