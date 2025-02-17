@@ -68,6 +68,9 @@ const Register = () => {
                         Create Account
                     </button>
                 </form>
+                <p className="mt-6 text-center text-sm text-gray-400">
+                    Already a user? <a href="/login" className="text-cyan-400">Log In Here</a>
+                </p>
             </div>
         </div>
     );

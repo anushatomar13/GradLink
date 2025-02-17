@@ -16,6 +16,7 @@ import {Dashboard } from './components/Dashboard';
 import ConnectPage from './components/ConnectPage';
 import DonationPage from './components/DonationPage';
 import Events from './components/Events'
+import Profile from './components/Profile'
 import { auth } from "./firebase";
 import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
@@ -52,6 +53,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/support" element={<Support />} />
           <Route path="/donate" element={<DonationPage />} />
+          <Route path="/profile/" element={<Profile />} />
         </Routes>
         <ToastContainer />
       </main>
