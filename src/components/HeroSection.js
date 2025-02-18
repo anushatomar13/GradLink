@@ -147,7 +147,7 @@ const HeroSection = () => {
 )} */}
  <button className="group relative px-8 py-4 bg-transparent border border-cyan-400 text-cyan-400 
                            hover:bg-cyan-400 hover:text-gray-900 transition-all duration-1000
-                           overflow-hidden font-mono" onClick={() => navigate('/auth')}>
+                           overflow-hidden font-mono" onClick={() => navigate('/connect')}>
               <div className="absolute inset-0 w-1 bg-cyan-400 transition-all duration-300
                            group-hover:w-full -z-10" />
               &lt;Join_Network /&gt;

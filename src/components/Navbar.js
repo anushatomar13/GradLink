@@ -41,7 +41,7 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.error("Logout Error:", error.message);
     }
@@ -90,7 +90,7 @@ const Navbar = () => {
                   onClick={handleLogout}
                   className="text-sm font-mono text-red-400 hover:text-red-300"
                 >
-                  Logout
+                  {'<'}Logout{'/>'}
                 </button>
               </>
             ) : (
@@ -98,7 +98,7 @@ const Navbar = () => {
                 to="/register"
                 className="text-sm font-mono text-cyan-400 hover:text-cyan-300"
               >
-                Login/Signup
+                {'<'}Login/Signup{'/>'}
               </Link>
             )}
           </div>
