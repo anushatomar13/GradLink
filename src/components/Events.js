@@ -20,40 +20,32 @@ const Events = () => {
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
-  const [editingPostId, setEditingPostId] = useState(null); // Track post being edited
-  const [editText, setEditText] = useState(""); // Edit post text
-  const [editImage, setEditImage] = useState(null); // Edit post image
-  const [editPreview, setEditPreview] = useState(null); // Image preview while editing
+  const [editingPostId, setEditingPostId] = useState(null);
+  const [editText, setEditText] = useState("");
+  const [editImage, setEditImage] = useState(null);
+  const [editPreview, setEditPreview] = useState(null);
 
-  // Fetch user role from Firestore
   useEffect(() => {
     const fetchUserRole = async () => {
       if (!user) return;
       const q = query(collection(db, "users"), where("uid", "==", user.uid));
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
-        const userData = querySnapshot.docs[0].data();
-        setRole(userData.role);
+        setRole(querySnapshot.docs[0].data().role);
       }
     };
     fetchUserRole();
   }, [user]);
 
-  // Fetch event posts from Firestore
   useEffect(() => {
     const fetchPosts = async () => {
       const q = query(collection(db, "events"));
       const querySnapshot = await getDocs(q);
-      const postsData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setPosts(postsData);
+      setPosts(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
     };
     fetchPosts();
   }, []);
 
-  // Handle image upload
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -62,25 +54,18 @@ const Events = () => {
     }
   };
 
-  // Handle event post submission (Restricted for students)
   const handlePostSubmit = async () => {
     if (!user) return alert("Please log in to post");
-
-    if (role === "student") {
-      alert("Students cannot post events.");
-      return;
-    }
+    if (role === "student") return alert("Students cannot post events.");
 
     if (text || image) {
-      const post = {
+      await addDoc(collection(db, "events"), {
         uid: user.uid,
         email: user.email,
         text,
         image: preview || null,
         createdAt: new Date(),
-      };
-
-      await addDoc(collection(db, "events"), post);
+      });
       setText("");
       setImage(null);
       setPreview(null);
@@ -88,24 +73,19 @@ const Events = () => {
     }
   };
 
-  // Handle delete post
   const handleDeletePost = async (postId) => {
     if (!user) return alert("Please log in");
-
-    const postRef = doc(db, "events", postId);
-    await deleteDoc(postRef);
-    setPosts(posts.filter((post) => post.id !== postId)); // Remove from state
+    await deleteDoc(doc(db, "events", postId));
+    setPosts(posts.filter((post) => post.id !== postId));
     alert("Post deleted successfully!");
   };
 
-  // Handle edit post
   const handleEditPost = (post) => {
     setEditingPostId(post.id);
     setEditText(post.text);
     setEditPreview(post.image);
   };
 
-  // Handle edit image upload
   const handleEditImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -114,12 +94,10 @@ const Events = () => {
     }
   };
 
-  // Save edited post
   const handleSaveEdit = async () => {
     if (!editingPostId) return;
 
-    const postRef = doc(db, "events", editingPostId);
-    await updateDoc(postRef, {
+    await updateDoc(doc(db, "events", editingPostId), {
       text: editText,
       image: editPreview || null,
     });
@@ -143,10 +121,7 @@ const Events = () => {
         <div className="text-center bg-gray-900 p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-bold text-cyan-400 mb-2">Welcome to Alumni Events!</h2>
           <p className="text-gray-300">Log in to create and view event posts.</p>
-          <Link
-            to="/login"
-            className="mt-4 inline-block px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-500"
-          >
+          <Link to="/login" className="mt-4 inline-block px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-500">
             Login / Sign Up
           </Link>
         </div>
@@ -168,10 +143,7 @@ const Events = () => {
                     <span>Upload Image</span>
                     <input type="file" className="hidden" onChange={handleImageUpload} />
                   </label>
-                  <button
-                    className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-500"
-                    onClick={handlePostSubmit}
-                  >
+                  <button className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-500" onClick={handlePostSubmit}>
                     Post
                   </button>
                 </div>
@@ -187,12 +159,7 @@ const Events = () => {
                 <div key={post.id} className="bg-gray-900 p-4 rounded-lg shadow-md">
                   {editingPostId === post.id ? (
                     <>
-                      <textarea
-                        className="w-full p-2 bg-gray-800 text-white rounded-lg"
-                        rows="3"
-                        value={editText}
-                        onChange={(e) => setEditText(e.target.value)}
-                      />
+                      <textarea className="w-full p-2 bg-gray-800 text-white rounded-lg" rows="3" value={editText} onChange={(e) => setEditText(e.target.value)} />
                       <input type="file" className="mt-2" onChange={handleEditImageUpload} />
                       {editPreview && <img src={editPreview} alt="Edit" className="mt-2 rounded-lg max-h-48" />}
                       <button className="mt-2 px-4 py-2 bg-green-600 text-white rounded-lg" onClick={handleSaveEdit}>
@@ -205,12 +172,8 @@ const Events = () => {
                       {post.image && <img src={post.image} alt="Event" className="rounded-lg max-h-48" />}
                       {user.uid === post.uid && (
                         <div className="flex space-x-3 mt-2">
-                          <button className="text-yellow-400" onClick={() => handleEditPost(post)}>
-                            Edit
-                          </button>
-                          <button className="text-red-500" onClick={() => handleDeletePost(post.id)}>
-                            Delete
-                          </button>
+                          <button className="text-yellow-400" onClick={() => handleEditPost(post)}>Edit</button>
+                          <button className="text-red-500" onClick={() => handleDeletePost(post.id)}>Delete</button>
                         </div>
                       )}
                     </>
