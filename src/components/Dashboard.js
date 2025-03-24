@@ -79,8 +79,9 @@ const Dashboard = () => {
 
             {/* User Name */}
             <h2 className="text-xl font-bold text-white mt-4">
-              {user ? user.displayName || user.email?.split("@")[0] : "Guest"}
-            </h2>
+  {user ? (user.displayName ? user.displayName : user.email?.split("@")[0]) : "Guest"}
+</h2>
+
           </div>
 
           {/* User Details */}

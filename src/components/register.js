@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import app from '../firebase';
 const Register = () => {
     const navigate = useNavigate();
     const [firstName, setFirstName] = useState('');
@@ -14,11 +15,24 @@ const Register = () => {
         e.preventDefault();
         setError('');
         const auth = getAuth();
+        const db = getFirestore(app); // Initialize Firestore
+
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            await updateProfile(userCredential.user, {
+            const user = userCredential.user;
+
+            await updateProfile(user, {
                 displayName: firstName, // Store first name as displayName
             });
+
+            // Store user details in Firestore
+            await setDoc(doc(db, 'users', user.uid), {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                uid: user.uid,
+            });
+
             navigate('/dashboard');
         } catch (err) {
             setError(err.message);
