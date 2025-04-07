@@ -4,6 +4,7 @@ import { auth, db } from "../firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import collegesList from "../data/colleges.json";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -187,15 +188,16 @@ const Dashboard = () => {
   <div>
     <label className="block mb-1 font-medium">College</label>
     <select
-      value={college}
-      onChange={(e) => setCollege(e.target.value)}
-      className="w-full bg-[#0D1117] border border-gray-700 p-2 rounded"
-    >
-      <option value="">Select College</option>
-      {["IIT Bombay", "IIT Delhi", "IIT Kanpur", "IIT Madras", "IIT Kharagpur"].map((name) => (
-        <option key={name}>{name}</option>
-      ))}
-    </select>
+  value={college}
+  onChange={(e) => setCollege(e.target.value)}
+  className="w-full bg-[#0D1117] border border-gray-700 p-2 rounded"
+>
+  <option value="">Select College</option>
+  {collegesList.map((name) => (
+    <option key={name} value={name}>{name}</option>
+  ))}
+</select>
+
   </div>
 
   {/* Company or Tech Stack Dropdown */}
