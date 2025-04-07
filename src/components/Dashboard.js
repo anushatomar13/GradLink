@@ -7,6 +7,7 @@ import { db } from "../firebase";
 const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [submittedData, setSubmittedData] = useState(null);
+  const [connections, setConnections] = useState({ sent: [], received: [], connected: [] });
 
   // Form fields
   const [studentOrAlumni, setStudentOrAlumni] = useState("");
@@ -21,14 +22,26 @@ const Dashboard = () => {
 
       if (user) {
         try {
-          const userDocRef = doc(db, "users", user.uid); // Reference to the user's document
+          // Fetch user profile data
+          const userDocRef = doc(db, "users", user.uid);
           const userDocSnap = await getDoc(userDocRef);
 
           if (userDocSnap.exists()) {
-            setSubmittedData(userDocSnap.data()); // Load stored data into state
+            setSubmittedData(userDocSnap.data());
           }
+
+          // Fetch user connection data
+          const connectionRef = doc(db, "connections", user.uid);
+          const connectionSnap = await getDoc(connectionRef);
+
+          if (connectionSnap.exists()) {
+            setConnections(connectionSnap.data());
+          } else {
+            setConnections({ sent: [], received: [], connected: [] });
+          }
+
         } catch (error) {
-          console.error("Error fetching user data:", error);
+          console.error("Error fetching user or connection data:", error);
         }
       }
     });
@@ -36,7 +49,6 @@ const Dashboard = () => {
     return () => unsubscribe();
   }, []);
 
-  // Handle form submission
   const onSubmit = async (e) => {
     e.preventDefault();
 
@@ -54,10 +66,9 @@ const Dashboard = () => {
     };
 
     try {
-      const userDocRef = doc(db, "users", user.uid); // Set document ID as user UID
-      await setDoc(userDocRef, userData, { merge: true }); // Merge to prevent overwriting
-
-      setSubmittedData(userData); // Update state with saved data
+      const userDocRef = doc(db, "users", user.uid);
+      await setDoc(userDocRef, userData, { merge: true });
+      setSubmittedData(userData);
     } catch (error) {
       console.error("Error saving document: ", error);
     }
@@ -67,7 +78,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-12 gap-6">
 
-        {/* Left Panel (Profile) */}
+        {/* Left Panel */}
         <div className="hidden md:block md:col-span-3 bg-gradient-to-b from-gray-800 to-gray-900 p-6 rounded-2xl border border-cyan-400/30 shadow-lg">
           <h4 className="text-lg font-semibold text-white mb-4 text-center">Your Profile</h4>
 
@@ -77,11 +88,9 @@ const Dashboard = () => {
               <img src="user.jpeg" alt="Profile" className="w-full h-full object-cover" />
             </div>
 
-            {/* User Name */}
             <h2 className="text-xl font-bold text-white mt-4">
-  {user ? (user.displayName ? user.displayName : user.email?.split("@")[0]) : "Guest"}
-</h2>
-
+              {user ? (user.displayName || user.email?.split("@")[0]) : "Guest"}
+            </h2>
           </div>
 
           {/* User Details */}
@@ -90,21 +99,35 @@ const Dashboard = () => {
             <div className="bg-gray-800 rounded-lg p-4 border border-cyan-500/20 text-center shadow-md">
               <p className="text-lg text-gray-300 font-medium underline">College</p>
               <h3 className="text-sm font-semibold text-white">{submittedData?.college || "Your College"}</h3>
-
               <p className="text-sm text-gray-300 font-medium mt-2 underline">Graduating Batch</p>
-              <h4 className="text-md font-semibold text-cyan-400">{submittedData?.graduatingBatch ? `${submittedData.graduatingBatch}` : "Your Batch"}</h4>
+              <h4 className="text-md font-semibold text-cyan-400">{submittedData?.graduatingBatch || "Your Batch"}</h4>
             </div>
 
-            {/* Company & Designation */}
+            {/* Company */}
             <div className="bg-gray-800 rounded-lg p-4 border border-cyan-500/20 text-center shadow-md">
               <p className="text-sm text-cyan-400 font-medium">
                 {submittedData ? `${submittedData.designation} @ ${submittedData.company}` : "Your current company"}
               </p>
             </div>
+
+            {/* Connections */}
+            <div className="bg-gray-800 rounded-lg p-4 border border-cyan-500/20 shadow-md">
+              <h4 className="text-white text-sm font-semibold mb-2 text-center">Your Connections</h4>
+              <ul className="text-cyan-400 text-sm text-center">
+  {connections.connected?.length > 0 ? (
+    connections.connected.map(uid => (
+      <li key={uid}>{uid}</li>
+    ))
+  ) : (
+    <li>No connections yet</li>
+  )}
+</ul>
+
+            </div>
           </div>
         </div>
 
-        {/* Main Section (Form or Submitted Data) */}
+        {/* Right Panel */}
         <div className="md:col-span-9">
           <div className="bg-gray-800 rounded-lg p-6 border border-cyan-400/20 min-h-[527px]">
             <h3 className="text-xl font-bold text-white mb-4">
@@ -113,64 +136,48 @@ const Dashboard = () => {
 
             {submittedData ? (
               <div className="space-y-6 text-white">
-                {/* Display submitted data */}
-                <div className="bg-gray-800 rounded-lg p-4 border border-cyan-400/20 shadow-md">
-                  <p><strong className="text-cyan-500">Role:</strong> {submittedData.studentOrAlumni}</p>
-                </div>
-                <div className="bg-gray-800 rounded-lg p-4 border border-cyan-400/20 shadow-md">
-                  <p><strong className="text-cyan-500">College:</strong> {submittedData.college}</p>
-                </div>
-                <div className="bg-gray-800 rounded-lg p-4 border border-cyan-400/20 shadow-md">
-                  <p><strong className="text-cyan-500">Company:</strong> {submittedData.company}</p>
-                </div>
-                <div className="bg-gray-800 rounded-lg p-4 border border-cyan-400/20 shadow-md">
-                  <p><strong className="text-cyan-500">Designation:</strong> {submittedData.designation}</p>
-                </div>
-                <div className="bg-gray-800 rounded-lg p-4 border border-cyan-400/20 shadow-md">
-                  <p><strong className="text-cyan-500">Graduating Batch:</strong> {submittedData.graduatingBatch}</p>
-                </div>
+                {[
+                  { label: "Role", value: submittedData.studentOrAlumni },
+                  { label: "College", value: submittedData.college },
+                  { label: "Company", value: submittedData.company },
+                  { label: "Designation", value: submittedData.designation },
+                  { label: "Graduating Batch", value: submittedData.graduatingBatch },
+                ].map((item, i) => (
+                  <div key={i} className="bg-gray-800 rounded-lg p-4 border border-cyan-400/20 shadow-md">
+                    <p><strong className="text-cyan-500">{item.label}:</strong> {item.value}</p>
+                  </div>
+                ))}
 
-                {/* Button to Edit */}
                 <button
-                  onClick={() => setSubmittedData(null)} // Allows editing data
+                  onClick={() => setSubmittedData(null)}
                   className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-2 rounded transition-all"
                 >
                   Edit Details
                 </button>
               </div>
             ) : (
-              // If no data is submitted, show the form
               <form onSubmit={onSubmit} className="space-y-6 text-white">
-                {/* Role Selection */}
+                {/* Role */}
                 <div className="form-group">
                   <label className="block text-sm font-medium mb-2">Who are you?</label>
                   <div className="flex space-x-4">
-                    <label className="inline-flex items-center">
-                      <input
-                        type="radio"
-                        name="role"
-                        className="form-radio text-cyan-400"
-                        value="Alumni"
-                        checked={studentOrAlumni === "Alumni"}
-                        onChange={(e) => setStudentOrAlumni(e.target.value)}
-                      />
-                      <span className="ml-2">Alumni</span>
-                    </label>
-                    <label className="inline-flex items-center">
-                      <input
-                        type="radio"
-                        name="role"
-                        className="form-radio text-cyan-400"
-                        value="Student"
-                        checked={studentOrAlumni === "Student"}
-                        onChange={(e) => setStudentOrAlumni(e.target.value)}
-                      />
-                      <span className="ml-2">Student</span>
-                    </label>
+                    {["Alumni", "Student"].map(role => (
+                      <label key={role} className="inline-flex items-center">
+                        <input
+                          type="radio"
+                          name="role"
+                          className="form-radio text-cyan-400"
+                          value={role}
+                          checked={studentOrAlumni === role}
+                          onChange={(e) => setStudentOrAlumni(e.target.value)}
+                        />
+                        <span className="ml-2">{role}</span>
+                      </label>
+                    ))}
                   </div>
                 </div>
 
-                {/* College Dropdown */}
+                {/* College */}
                 <div className="form-group">
                   <label className="block text-sm font-medium mb-2">Select Your College</label>
                   <select
@@ -179,38 +186,43 @@ const Dashboard = () => {
                     onChange={(e) => setCollege(e.target.value)}
                   >
                     <option value="">Select College</option>
-                    <option>Indian Institute of Technology (IIT) Bombay</option>
-                    <option>Indian Institute of Technology (IIT) Delhi</option>
-                    <option>Indian Institute of Technology (IIT) Kanpur</option>
-                    <option>Indian Institute of Technology (IIT) Madras</option>
-                    <option>Indian Institute of Technology (IIT) Kharagpur</option>
+                    <option>IIT Bombay</option>
+                    <option>IIT Delhi</option>
+                    <option>IIT Kanpur</option>
+                    <option>IIT Madras</option>
+                    <option>IIT Kharagpur</option>
                   </select>
                 </div>
 
-                {/* Other Inputs */}
+                {/* Company */}
                 <div className="form-group">
-                  <label className="block text-sm font-medium mb-2">{studentOrAlumni === "Student" ? "Tech Stack" : "Current Company"}</label>
+                  <label className="block text-sm font-medium mb-2">
+                    {studentOrAlumni === "Student" ? "Tech Stack" : "Current Company"}
+                  </label>
                   <input
                     type="text"
-                    placeholder="For example: Tech Corp, Cognizant"
+                    placeholder="Example: Cognizant, TCS..."
                     className="form-control w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
                   />
                 </div>
 
+                {/* Designation */}
                 <div className="form-group">
-                  <label className="block text-sm font-medium mb-2">{studentOrAlumni === "Student" ? "What are you looking for?" : "Designation"}</label>
+                  <label className="block text-sm font-medium mb-2">
+                    {studentOrAlumni === "Student" ? "What are you looking for?" : "Designation"}
+                  </label>
                   <input
                     type="text"
-                    placeholder="For example: Junior Developer, SDE-2, etc"
+                    placeholder="Example: SDE-1, Junior Developer"
                     className="form-control w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
                     value={designation}
                     onChange={(e) => setDesignation(e.target.value)}
                   />
                 </div>
 
-                {/* Graduating Batch Dropdown */}
+                {/* Batch */}
                 <div className="form-group">
                   <label className="block text-sm font-medium mb-2">Graduating Batch</label>
                   <select
@@ -219,11 +231,9 @@ const Dashboard = () => {
                     onChange={(e) => setGraduatingBatch(e.target.value)}
                   >
                     <option value="">Select Batch</option>
-                    <option value="2020">2020</option>
-                    <option value="2021">2021</option>
-                    <option value="2022">2022</option>
-                    <option value="2023">2023</option>
-                    <option value="2024">2024</option>
+                    {[2020, 2021, 2022, 2023, 2024].map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -237,6 +247,7 @@ const Dashboard = () => {
             )}
           </div>
         </div>
+
       </div>
     </div>
   );
