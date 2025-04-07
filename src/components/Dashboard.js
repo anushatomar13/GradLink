@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { motion } from "framer-motion";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -15,242 +16,273 @@ const Dashboard = () => {
   const [company, setCompany] = useState("");
   const [designation, setDesignation] = useState("");
   const [graduatingBatch, setGraduatingBatch] = useState("");
+  const [showConnections, setShowConnections] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
-
       if (user) {
         try {
-          const userDocRef = doc(db, "users", user.uid);
-          const userDocSnap = await getDoc(userDocRef);
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists()) setSubmittedData(userDoc.data());
 
-          if (userDocSnap.exists()) {
-            setSubmittedData(userDocSnap.data());
-          }
-
-          const connectionRef = doc(db, "connections", user.uid);
-          const connectionSnap = await getDoc(connectionRef);
-
-          if (connectionSnap.exists()) {
-            setConnections(connectionSnap.data());
-          } else {
-            setConnections({ sent: [], received: [], connected: [] });
-          }
-        } catch (error) {
-          console.error("Error fetching user or connection data:", error);
+          const connDoc = await getDoc(doc(db, "connections", user.uid));
+          setConnections(connDoc.exists() ? connDoc.data() : { sent: [], received: [], connected: [] });
+        } catch (err) {
+          console.error("Error fetching data:", err);
         }
       }
     });
-
     return () => unsubscribe();
   }, []);
 
   useEffect(() => {
-    const fetchConnectedUsers = async () => {
-      if (connections.connected.length > 0) {
-        const fetched = await Promise.all(
-          connections.connected.map(async (uid) => {
-            const docSnap = await getDoc(doc(db, "users", uid));
-            return docSnap.exists() ? { id: uid, ...docSnap.data() } : null;
-          })
-        );
-        setConnectedUsers(fetched.filter(Boolean));
-      }
+    const fetchConnections = async () => {
+      const fetched = await Promise.all(
+        connections.connected.map(async (uid) => {
+          const docSnap = await getDoc(doc(db, "users", uid));
+          return docSnap.exists() ? { id: uid, ...docSnap.data() } : null;
+        })
+      );
+      setConnectedUsers(fetched.filter(Boolean));
     };
-
-    fetchConnectedUsers();
+    if (connections.connected.length) fetchConnections();
   }, [connections]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
-
-    if (!user) {
-      console.error("No user is logged in.");
-      return;
-    }
-
-    const userData = {
-      studentOrAlumni,
-      college,
-      company,
-      designation,
-      graduatingBatch,
-    };
-
+    if (!user) return;
+    const data = { studentOrAlumni, college, company, designation, graduatingBatch };
     try {
-      const userDocRef = doc(db, "users", user.uid);
-      await setDoc(userDocRef, userData, { merge: true });
-      setSubmittedData(userData);
-    } catch (error) {
-      console.error("Error saving document: ", error);
+      await setDoc(doc(db, "users", user.uid), data, { merge: true });
+      setSubmittedData(data);
+    } catch (err) {
+      console.error("Error saving: ", err);
     }
   };
 
+  const SectionCard = ({ label, value }) => (
+    <div className="bg-[#0D1117] p-4 border border-gray-700 rounded-lg hover:shadow transition">
+      <p className="text-gray-400 text-sm">{label}</p>
+      <h4 className="text-white text-lg">{value || "N/A"}</h4>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-12 gap-6">
+    <div className="flex min-h-screen bg-[#0D1117] text-white">
+      <aside className="w-full md:w-1/4 bg-[#161B22] px-6 pt-10 pb-6 border-r border-[#30363D] min-h-screen">
+        <div className="flex flex-col items-center text-center space-y-4 border-b border-[#30363D] pb-6 mb-6">
+          <img
+            src="/user.jpeg"
+            alt="Profile"
+            className="w-24 h-24 rounded-full border-4 border-cyan-500 shadow"
+          />
+          <h2 className="font-semibold text-xl">
+            {user?.displayName || user?.email?.split("@")[0]}
+          </h2>
+          <p className="text-sm text-gray-400">
+            {submittedData?.designation} @ {submittedData?.company}
+          </p>
+        </div>
 
-        {/* Left Panel */}
-        <div className="hidden md:block md:col-span-3 bg-gradient-to-b from-gray-800 to-gray-900 p-6 rounded-2xl border border-cyan-400/30 shadow-lg">
-          <h4 className="text-lg font-semibold text-white mb-4 text-center">Your Profile</h4>
+        <div className="space-y-4">
+          <SectionCard label="College" value={submittedData?.college} />
+          <SectionCard label="Batch" value={submittedData?.graduatingBatch} />
 
-          <div className="flex flex-col items-center">
-            <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-cyan-500 shadow-md">
-              <img src="user.jpeg" alt="Profile" className="w-full h-full object-cover" />
-            </div>
+          <div className="bg-[#0D1117] border border-gray-700 p-4 rounded-lg">
+            <p className="text-sm text-gray-400 mb-2">Connections</p>
+            <div className="bg-[#0D1117] border border-gray-700 p-4 rounded-lg">
+              <div
+                className="flex justify-between items-center cursor-pointer mb-2"
+                onClick={() => setShowConnections(prev => !prev)}
+              >
+                <p className="text-sm text-gray-400">
+                  Connections ({connectedUsers.length})
+                </p>
+                {showConnections ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </div>
 
-            <h2 className="text-xl font-bold text-white mt-4">
-              {user ? (user.displayName || user.email?.split("@")[0]) : "Guest"}
-            </h2>
-          </div>
-
-          <div className="mt-6 space-y-4">
-            <div className="bg-gray-800 rounded-lg p-4 border border-cyan-500/20 text-center shadow-md">
-              <p className="text-lg text-gray-300 font-medium underline">College</p>
-              <h3 className="text-sm font-semibold text-white">{submittedData?.college || "Your College"}</h3>
-              <p className="text-sm text-gray-300 font-medium mt-2 underline">Graduating Batch</p>
-              <h4 className="text-md font-semibold text-cyan-400">{submittedData?.graduatingBatch || "Your Batch"}</h4>
-            </div>
-
-            <div className="bg-gray-800 rounded-lg p-4 border border-cyan-500/20 text-center shadow-md">
-              <p className="text-sm text-cyan-400 font-medium">
-                {submittedData ? `${submittedData.designation} @ ${submittedData.company}` : "Your current company"}
-              </p>
-            </div>
-
-            <div className="bg-gray-800 rounded-lg p-4 border border-cyan-500/20 shadow-md">
-              <h4 className="text-white text-sm font-semibold mb-2 text-center">Your Connections</h4>
-              <ul className="text-cyan-400 text-sm text-center">
+              <motion.div
+                initial={false}
+                animate={{ height: showConnections ? "auto" : 0, opacity: showConnections ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
                 {connectedUsers.length > 0 ? (
-                  connectedUsers.map(u => (
-                    <li key={u.id}>{u.firstName} {u.lastName}</li>
-                  ))
+                  <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
+                    {connectedUsers.map((u) => (
+                      <div key={u.id} className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <img
+                            src="/user.jpeg"
+                            alt={`${u.firstName} ${u.lastName}`}
+                            className="w-8 h-8 rounded-full border border-gray-700"
+                          />
+                          <div className="flex flex-col text-sm">
+                            <span className="text-white">{u.firstName} {u.lastName}</span>
+                            <span className="text-gray-400 text-xs">{u.designation}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 ) : (
-                  <li>No connections yet</li>
+                  <p className="text-gray-500 text-sm mt-2">No connections yet</p>
                 )}
-              </ul>
+              </motion.div>
             </div>
           </div>
         </div>
+      </aside>
 
-        {/* Right Panel */}
-        <div className="md:col-span-9">
-          <div className="bg-gray-800 rounded-lg p-6 border border-cyan-400/20 min-h-[527px]">
-            <h3 className="text-xl font-bold text-white mb-4">
-              Welcome, {user ? user.displayName || user.email?.split("@")[0] : "Guest"}!
-            </h3>
+      <main className="flex-1 p-8">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="max-w-3xl mx-auto"
+        >
+          <h1 className="text-3xl font-bold mb-6">Welcome, {user?.displayName || "User"} 👋</h1>
 
-            {submittedData ? (
-              <div className="space-y-6 text-white">
-                {[ 
-                  { label: "Role", value: submittedData.studentOrAlumni },
-                  { label: "College", value: submittedData.college },
-                  { label: "Company", value: submittedData.company },
-                  { label: "Designation", value: submittedData.designation },
-                  { label: "Graduating Batch", value: submittedData.graduatingBatch },
-                ].map((item, i) => (
-                  <div key={i} className="bg-gray-800 rounded-lg p-4 border border-cyan-400/20 shadow-md">
-                    <p><strong className="text-cyan-500">{item.label}:</strong> {item.value}</p>
-                  </div>
-                ))}
-
+          {submittedData ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <SectionCard label="Role" value={submittedData.studentOrAlumni} />
+              <SectionCard label="College" value={submittedData.college} />
+              <SectionCard label="Company" value={submittedData.company} />
+              <SectionCard label="Designation" value={submittedData.designation} />
+              <SectionCard label="Graduating Batch" value={submittedData.graduatingBatch} />
+              <div className="col-span-1 md:col-span-2">
                 <button
                   onClick={() => setSubmittedData(null)}
-                  className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-2 rounded transition-all"
+                  className="w-full bg-cyan-500 hover:bg-cyan-600 py-2 rounded-lg font-semibold transition"
                 >
                   Edit Details
                 </button>
               </div>
-            ) : (
-              <form onSubmit={onSubmit} className="space-y-6 text-white">
-                <div className="form-group">
-                  <label className="block text-sm font-medium mb-2">Who are you?</label>
-                  <div className="flex space-x-4">
-                    {["Alumni", "Student"].map(role => (
-                      <label key={role} className="inline-flex items-center">
-                        <input
-                          type="radio"
-                          name="role"
-                          className="form-radio text-cyan-400"
-                          value={role}
-                          checked={studentOrAlumni === role}
-                          onChange={(e) => setStudentOrAlumni(e.target.value)}
-                        />
-                        <span className="ml-2">{role}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
+            </div>
+          ) : (
+            <form onSubmit={onSubmit} className="space-y-6">
+  <div>
+    <label className="block mb-1 font-medium">Who are you?</label>
+    <div className="flex space-x-4">
+      {["Alumni", "Student"].map((role) => (
+        <label key={role} className="flex items-center space-x-2">
+          <input
+            type="radio"
+            value={role}
+            checked={studentOrAlumni === role}
+            onChange={(e) => {
+              setStudentOrAlumni(e.target.value);
+              setCompany("");
+              setDesignation("");
+            }}
+            className="accent-cyan-500"
+          />
+          <span>{role}</span>
+        </label>
+      ))}
+    </div>
+  </div>
 
-                <div className="form-group">
-                  <label className="block text-sm font-medium mb-2">Select Your College</label>
-                  <select
-                    className="form-control w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
-                    value={college}
-                    onChange={(e) => setCollege(e.target.value)}
-                  >
-                    <option value="">Select College</option>
-                    <option>IIT Bombay</option>
-                    <option>IIT Delhi</option>
-                    <option>IIT Kanpur</option>
-                    <option>IIT Madras</option>
-                    <option>IIT Kharagpur</option>
-                  </select>
-                </div>
+  <div>
+    <label className="block mb-1 font-medium">College</label>
+    <select
+      value={college}
+      onChange={(e) => setCollege(e.target.value)}
+      className="w-full bg-[#0D1117] border border-gray-700 p-2 rounded"
+    >
+      <option value="">Select College</option>
+      {["IIT Bombay", "IIT Delhi", "IIT Kanpur", "IIT Madras", "IIT Kharagpur"].map((name) => (
+        <option key={name}>{name}</option>
+      ))}
+    </select>
+  </div>
 
-                <div className="form-group">
-                  <label className="block text-sm font-medium mb-2">
-                    {studentOrAlumni === "Student" ? "Tech Stack" : "Current Company"}
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Example: Cognizant, TCS..."
-                    className="form-control w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                  />
-                </div>
+  {/* Company or Tech Stack Dropdown */}
+  <div>
+    <label className="block mb-1 font-medium">
+      {studentOrAlumni === "Student" ? "Tech Stack" : "Company"}
+    </label>
+    <select
+      value={company}
+      onChange={(e) => setCompany(e.target.value)}
+      className="w-full bg-[#0D1117] border border-gray-700 p-2 rounded"
+    >
+      <option value="">Select {studentOrAlumni === "Student" ? "Tech Stack" : "Company"}</option>
+      {studentOrAlumni === "Student"
+        ? ["MERN", "Java + Spring", "Python + Django", "Android", "Flutter", "Other"]
+        : ["Google", "Microsoft", "Amazon", "Infosys", "TCS", "Other"]
+      .map((item) => (
+        <option key={item} value={item}>{item}</option>
+      ))}
+    </select>
 
-                <div className="form-group">
-                  <label className="block text-sm font-medium mb-2">
-                    {studentOrAlumni === "Student" ? "What are you looking for?" : "Designation"}
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Example: SDE-1, Junior Developer"
-                    className="form-control w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
-                    value={designation}
-                    onChange={(e) => setDesignation(e.target.value)}
-                  />
-                </div>
+    {company === "Other" && (
+      <input
+        type="text"
+        placeholder="Enter custom value"
+        className="mt-2 w-full bg-[#0D1117] border border-gray-700 p-2 rounded"
+        onChange={(e) => setCompany(e.target.value)}
+      />
+    )}
+  </div>
 
-                <div className="form-group">
-                  <label className="block text-sm font-medium mb-2">Graduating Batch</label>
-                  <select
-                    className="form-control w-full p-2 border border-gray-600 rounded bg-gray-900 text-white"
-                    value={graduatingBatch}
-                    onChange={(e) => setGraduatingBatch(e.target.value)}
-                  >
-                    <option value="">Select Batch</option>
-                    {[2020, 2021, 2022, 2023, 2024].map(year => (
-                      <option key={year} value={year}>{year}</option>
-                    ))}
-                  </select>
-                </div>
+  {/* Designation or Looking For Dropdown */}
+  <div>
+    <label className="block mb-1 font-medium">
+      {studentOrAlumni === "Student" ? "Looking for" : "Designation"}
+    </label>
+    <select
+      value={designation}
+      onChange={(e) => setDesignation(e.target.value)}
+      className="w-full bg-[#0D1117] border border-gray-700 p-2 rounded"
+    >
+      <option value="">
+        Select {studentOrAlumni === "Student" ? "Interest Area" : "Designation"}
+      </option>
+      {studentOrAlumni === "Student"
+        ? ["Intern", "Research Internship", "Freelance", "Full-time", "Other"]
+        : ["SDE-1", "Data Analyst", "Consultant", "Product Manager", "Other"]
+      .map((item) => (
+        <option key={item} value={item}>{item}</option>
+      ))}
+    </select>
 
-                <button
-                  type="submit"
-                  className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-2 rounded transition-all"
-                >
-                  Save Details
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
+    {designation === "Other" && (
+      <input
+        type="text"
+        placeholder="Enter custom value"
+        className="mt-2 w-full bg-[#0D1117] border border-gray-700 p-2 rounded"
+        onChange={(e) => setDesignation(e.target.value)}
+      />
+    )}
+  </div>
 
-      </div>
+  <div>
+    <label className="block mb-1 font-medium">Graduating Batch</label>
+    <select
+      value={graduatingBatch}
+      onChange={(e) => setGraduatingBatch(e.target.value)}
+      className="w-full bg-[#0D1117] border border-gray-700 p-2 rounded"
+    >
+      <option value="">Select Batch</option>
+      {[2020, 2021, 2022, 2023, 2024, 2025, 2026].map((y) => (
+        <option key={y}>{y}</option>
+      ))}
+    </select>
+  </div>
+
+  <button
+    type="submit"
+    className="w-full bg-cyan-500 hover:bg-cyan-600 py-2 rounded-lg font-semibold transition"
+  >
+    Save Details
+  </button>
+</form>
+
+          )}
+        </motion.div>
+      </main>
     </div>
   );
 };
