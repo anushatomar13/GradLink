@@ -8,8 +8,8 @@ const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [submittedData, setSubmittedData] = useState(null);
   const [connections, setConnections] = useState({ sent: [], received: [], connected: [] });
+  const [connectedUsers, setConnectedUsers] = useState([]);
 
-  // Form fields
   const [studentOrAlumni, setStudentOrAlumni] = useState("");
   const [college, setCollege] = useState("");
   const [company, setCompany] = useState("");
@@ -22,7 +22,6 @@ const Dashboard = () => {
 
       if (user) {
         try {
-          // Fetch user profile data
           const userDocRef = doc(db, "users", user.uid);
           const userDocSnap = await getDoc(userDocRef);
 
@@ -30,7 +29,6 @@ const Dashboard = () => {
             setSubmittedData(userDocSnap.data());
           }
 
-          // Fetch user connection data
           const connectionRef = doc(db, "connections", user.uid);
           const connectionSnap = await getDoc(connectionRef);
 
@@ -39,7 +37,6 @@ const Dashboard = () => {
           } else {
             setConnections({ sent: [], received: [], connected: [] });
           }
-
         } catch (error) {
           console.error("Error fetching user or connection data:", error);
         }
@@ -48,6 +45,22 @@ const Dashboard = () => {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const fetchConnectedUsers = async () => {
+      if (connections.connected.length > 0) {
+        const fetched = await Promise.all(
+          connections.connected.map(async (uid) => {
+            const docSnap = await getDoc(doc(db, "users", uid));
+            return docSnap.exists() ? { id: uid, ...docSnap.data() } : null;
+          })
+        );
+        setConnectedUsers(fetched.filter(Boolean));
+      }
+    };
+
+    fetchConnectedUsers();
+  }, [connections]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -82,7 +95,6 @@ const Dashboard = () => {
         <div className="hidden md:block md:col-span-3 bg-gradient-to-b from-gray-800 to-gray-900 p-6 rounded-2xl border border-cyan-400/30 shadow-lg">
           <h4 className="text-lg font-semibold text-white mb-4 text-center">Your Profile</h4>
 
-          {/* Profile Image */}
           <div className="flex flex-col items-center">
             <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-cyan-500 shadow-md">
               <img src="user.jpeg" alt="Profile" className="w-full h-full object-cover" />
@@ -93,9 +105,7 @@ const Dashboard = () => {
             </h2>
           </div>
 
-          {/* User Details */}
           <div className="mt-6 space-y-4">
-            {/* College & Batch */}
             <div className="bg-gray-800 rounded-lg p-4 border border-cyan-500/20 text-center shadow-md">
               <p className="text-lg text-gray-300 font-medium underline">College</p>
               <h3 className="text-sm font-semibold text-white">{submittedData?.college || "Your College"}</h3>
@@ -103,26 +113,23 @@ const Dashboard = () => {
               <h4 className="text-md font-semibold text-cyan-400">{submittedData?.graduatingBatch || "Your Batch"}</h4>
             </div>
 
-            {/* Company */}
             <div className="bg-gray-800 rounded-lg p-4 border border-cyan-500/20 text-center shadow-md">
               <p className="text-sm text-cyan-400 font-medium">
                 {submittedData ? `${submittedData.designation} @ ${submittedData.company}` : "Your current company"}
               </p>
             </div>
 
-            {/* Connections */}
             <div className="bg-gray-800 rounded-lg p-4 border border-cyan-500/20 shadow-md">
               <h4 className="text-white text-sm font-semibold mb-2 text-center">Your Connections</h4>
               <ul className="text-cyan-400 text-sm text-center">
-  {connections.connected?.length > 0 ? (
-    connections.connected.map(uid => (
-      <li key={uid}>{uid}</li>
-    ))
-  ) : (
-    <li>No connections yet</li>
-  )}
-</ul>
-
+                {connectedUsers.length > 0 ? (
+                  connectedUsers.map(u => (
+                    <li key={u.id}>{u.firstName} {u.lastName}</li>
+                  ))
+                ) : (
+                  <li>No connections yet</li>
+                )}
+              </ul>
             </div>
           </div>
         </div>
@@ -136,7 +143,7 @@ const Dashboard = () => {
 
             {submittedData ? (
               <div className="space-y-6 text-white">
-                {[
+                {[ 
                   { label: "Role", value: submittedData.studentOrAlumni },
                   { label: "College", value: submittedData.college },
                   { label: "Company", value: submittedData.company },
@@ -157,7 +164,6 @@ const Dashboard = () => {
               </div>
             ) : (
               <form onSubmit={onSubmit} className="space-y-6 text-white">
-                {/* Role */}
                 <div className="form-group">
                   <label className="block text-sm font-medium mb-2">Who are you?</label>
                   <div className="flex space-x-4">
@@ -177,7 +183,6 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                {/* College */}
                 <div className="form-group">
                   <label className="block text-sm font-medium mb-2">Select Your College</label>
                   <select
@@ -194,7 +199,6 @@ const Dashboard = () => {
                   </select>
                 </div>
 
-                {/* Company */}
                 <div className="form-group">
                   <label className="block text-sm font-medium mb-2">
                     {studentOrAlumni === "Student" ? "Tech Stack" : "Current Company"}
@@ -208,7 +212,6 @@ const Dashboard = () => {
                   />
                 </div>
 
-                {/* Designation */}
                 <div className="form-group">
                   <label className="block text-sm font-medium mb-2">
                     {studentOrAlumni === "Student" ? "What are you looking for?" : "Designation"}
@@ -222,7 +225,6 @@ const Dashboard = () => {
                   />
                 </div>
 
-                {/* Batch */}
                 <div className="form-group">
                   <label className="block text-sm font-medium mb-2">Graduating Batch</label>
                   <select

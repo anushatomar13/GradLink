@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Search, MapPin, Briefcase, GraduationCap, UserPlus, UserCheck } from 'lucide-react';
-import { db } from '../firebase';
-import { collection, getDocs, doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
-import { auth } from "../firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { Search, Briefcase, GraduationCap, UserPlus, UserCheck } from 'lucide-react';
+import { db, auth } from '../firebase';
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove
+} from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const ConnectPage = () => {
   const [filters, setFilters] = useState({ year: '', industry: '', location: '' });
@@ -17,7 +25,7 @@ const ConnectPage = () => {
         .map(doc => ({ id: doc.id, ...doc.data() }))
         .filter(user => user.id !== uid);
 
-      const connectionDoc = await getDoc(doc(db, "connections", uid));
+      const connectionDoc = await getDoc(doc(db, 'connections', uid));
       const connectionData = connectionDoc.exists() ? connectionDoc.data() : {
         sent: [],
         received: [],
@@ -29,12 +37,12 @@ const ConnectPage = () => {
         return {
           ...user,
           status: connectionData.connected.includes(id)
-            ? "connected"
+            ? 'connected'
             : connectionData.sent.includes(id)
-            ? "sent"
+            ? 'sent'
             : connectionData.received.includes(id)
-            ? "received"
-            : "none",
+            ? 'received'
+            : 'none',
         };
       });
 
@@ -58,8 +66,8 @@ const ConnectPage = () => {
   const sendRequest = async (targetUid) => {
     if (!currentUserUid || !targetUid) return;
 
-    const senderRef = doc(db, "connections", currentUserUid);
-    const receiverRef = doc(db, "connections", targetUid);
+    const senderRef = doc(db, 'connections', currentUserUid);
+    const receiverRef = doc(db, 'connections', targetUid);
 
     const senderSnap = await getDoc(senderRef);
     const receiverSnap = await getDoc(receiverRef);
@@ -81,14 +89,14 @@ const ConnectPage = () => {
 
     setUsers(prev =>
       prev.map(u =>
-        u.id === targetUid ? { ...u, status: "sent" } : u
+        u.id === targetUid ? { ...u, status: 'sent' } : u
       )
     );
   };
 
   const acceptRequest = async (targetUid) => {
-    const myRef = doc(db, "connections", currentUserUid);
-    const theirRef = doc(db, "connections", targetUid);
+    const myRef = doc(db, 'connections', currentUserUid);
+    const theirRef = doc(db, 'connections', targetUid);
 
     await updateDoc(myRef, {
       received: arrayRemove(targetUid),
@@ -102,10 +110,49 @@ const ConnectPage = () => {
 
     setUsers(prev =>
       prev.map(u =>
-        u.id === targetUid ? { ...u, status: "connected" } : u
+        u.id === targetUid ? { ...u, status: 'connected' } : u
       )
     );
   };
+
+  const cancelRequest = async (targetUid) => {
+    const myRef = doc(db, 'connections', currentUserUid);
+    const theirRef = doc(db, 'connections', targetUid);
+
+    await updateDoc(myRef, {
+      sent: arrayRemove(targetUid),
+    });
+
+    await updateDoc(theirRef, {
+      received: arrayRemove(currentUserUid),
+    });
+
+    setUsers(prev =>
+      prev.map(u =>
+        u.id === targetUid ? { ...u, status: 'none' } : u
+      )
+    );
+  };
+
+  const removeConnection = async (targetUid) => {
+    const myRef = doc(db, "connections", currentUserUid);
+    const theirRef = doc(db, "connections", targetUid);
+  
+    await updateDoc(myRef, {
+      connected: arrayRemove(targetUid),
+    });
+  
+    await updateDoc(theirRef, {
+      connected: arrayRemove(currentUserUid),
+    });
+  
+    setUsers(prev =>
+      prev.map(u =>
+        u.id === targetUid ? { ...u, status: "none" } : u
+      )
+    );
+  };
+  
 
   return (
     <div className="min-h-screen bg-gray-900 pt-8">
@@ -127,14 +174,25 @@ const ConnectPage = () => {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold text-white">
-                    {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : "No Name Available"}
+                    {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : 'No Name Available'}
                   </h3>
                 </div>
-                {user.status === "connected" ? (
-                  <span className="text-green-400">Connected</span>
-                ) : user.status === "sent" ? (
-                  <span className="text-yellow-400">Request Sent</span>
-                ) : user.status === "received" ? (
+                {user.status === 'connected' ? (
+  <button
+    onClick={() => removeConnection(user.id)}
+    className="text-red-400 hover:text-red-300 transition-colors duration-300"
+  >
+    Disconnect
+  </button>
+
+                ) : user.status === 'sent' ? (
+                  <button
+                    onClick={() => cancelRequest(user.id)}
+                    className="text-yellow-400 hover:text-yellow-300 transition-colors duration-300"
+                  >
+                    Cancel Request
+                  </button>
+                ) : user.status === 'received' ? (
                   <button
                     onClick={() => acceptRequest(user.id)}
                     className="text-green-300 hover:text-green-200 transition-colors duration-300"
@@ -160,11 +218,11 @@ const ConnectPage = () => {
                 )}
                 <div className="flex items-center space-x-2">
                   <GraduationCap size={16} className="text-cyan-400/70" />
-                  <span>Class of {user.graduatingBatch || "N/A"}</span>
+                  <span>Class of {user.graduatingBatch || 'N/A'}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <UserCheck size={16} className="text-cyan-400/70" />
-                  <span>{user.designation || "N/A"}</span>
+                  <span>{user.designation || 'N/A'}</span>
                 </div>
               </div>
             </div>
